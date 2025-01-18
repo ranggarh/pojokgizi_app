@@ -1,20 +1,78 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import { NavigationContainer } from "@react-navigation/native";
+import * as React from "react";
+import { GluestackUIProvider } from "@gluestack-ui/themed";
+import { config } from "@gluestack-ui/config";
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import Home from "./screens/Home";
+import { Ionicons } from '@expo/vector-icons';
+import { SafeAreaView } from "react-native-safe-area-context";
 
-export default function App() {
+const Stack = createNativeStackNavigator();
+const Tab = createBottomTabNavigator();
+
+const Tabs = () => {
   return (
-    <View style={styles.container}>
-      <Text>Open up App.tsx to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
+    <Tab.Navigator
+  screenOptions={({ route }) => ({
+    tabBarIcon: ({ focused, color }) => {
+      // Tipe eksplisit untuk iconName
+      let iconName: "home" | "newspaper" | "person-circle";
+      switch (route.name) {
+        case "Home":
+          iconName = "home";
+          break;
+        case "Riwayat":
+          iconName = "newspaper";
+          break;
+        case "Profile":
+          iconName = "person-circle";
+          break;
+        default:
+          iconName = "home"; // Default fallback (opsional)
+      }
+      return (
+        <Ionicons
+          name={iconName}
+          size={30}
+          color={focused ? "white" : color}
+        />
+      );
+    },
+    tabBarIconStyle: { marginTop: 5 },
+    tabBarStyle: {
+      backgroundColor: '#181059',
+      height: 60,
+      borderTopWidth: 0,
+      borderTopRightRadius: 10,
+      borderTopLeftRadius: 10,
+    },
+    tabBarShowLabel: false,
+  })}
+>
+  <Tab.Screen name="Home" component={Home} options={noHead} />
+  <Tab.Screen name="Riwayat" component={Home} options={noHead} />
+  <Tab.Screen name="Profile" component={Home} options={noHead} />
+</Tab.Navigator>
+
+  );
+};
+
+const noHead = { headerShown: false };
+
+function App() {
+  return (
+    <GluestackUIProvider config={config}>
+      <SafeAreaView style={{ flex: 1 }}>
+      <NavigationContainer>
+      <Stack.Navigator>    
+          <Stack.Screen name="Tabs" component={Tabs} options={noHead}/>
+      </Stack.Navigator>
+
+      </NavigationContainer>
+      </SafeAreaView>
+    </GluestackUIProvider>
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
+export default App;
