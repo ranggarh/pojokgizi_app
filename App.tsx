@@ -7,6 +7,10 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import Home from "./screens/Home";
 import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from "react-native-safe-area-context";
+import AntroCalc from "./screens/calculator";
+import FormPengukuran from "./components/formPengukuran";
+import DetailPengukuran from "./screens/detailPengukuran";
+import FormKalkulator from "./components/formKalkulator";
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -35,13 +39,13 @@ const Tabs = () => {
         <Ionicons
           name={iconName}
           size={30}
-          color={focused ? "white" : color}
+          color={focused ? "#23b160" : "#d3d3d3"}
         />
       );
     },
     tabBarIconStyle: { marginTop: 5 },
     tabBarStyle: {
-      backgroundColor: '#181059',
+      backgroundColor: 'white',
       height: 60,
       borderTopWidth: 0,
       borderTopRightRadius: 10,
@@ -67,8 +71,14 @@ function App() {
       <NavigationContainer>
       <Stack.Navigator>    
           <Stack.Screen name="Tabs" component={Tabs} options={noHead}/>
-      </Stack.Navigator>
+          <Stack.Screen name="Pengukuran Status Gizi" component={AntroCalc}/>
+          <Stack.Screen name="Tambah Pengukuran" component={FormPengukuran}/>
+          <Stack.Screen name="Data Pengukuran" component={DetailPengukuran}/>
+          <Stack.Screen name="Kalkulator" component={FormKalkulator}/>
 
+
+
+      </Stack.Navigator>
       </NavigationContainer>
       </SafeAreaView>
     </GluestackUIProvider>
