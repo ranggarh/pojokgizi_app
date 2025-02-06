@@ -189,7 +189,7 @@ const Home = () => {
                     <HStack flex={1} justifyContent="space-around" borderRadius={5} gap={"$2"}>
                         {features &&
                             features.map((item) => (
-                                <Pressable key={item.id} onPress={() => alert(item.name)} $pressed-backgroundColor="$blue.100">
+                                <Pressable key={item.id} onPress={() => navigation.navigate(item.name)} >
                                     <Box bg="white" borderRadius={5} p={"$4"} alignItems="center" justifyContent="center" flex={1} width={80}>
                                         <Box
                                             width={50}

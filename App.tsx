@@ -11,6 +11,7 @@ import AntroCalc from "./screens/calculator";
 import FormPengukuran from "./components/formPengukuran";
 import DetailPengukuran from "./screens/detailPengukuran";
 import FormKalkulator from "./components/formKalkulator";
+import Bmi from "./screens/bmi";
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -75,9 +76,7 @@ function App() {
           <Stack.Screen name="Tambah Pengukuran" component={FormPengukuran}/>
           <Stack.Screen name="Data Pengukuran" component={DetailPengukuran}/>
           <Stack.Screen name="Kalkulator" component={FormKalkulator}/>
-
-
-
+          <Stack.Screen name="Cek BMI Ideal" component={Bmi}/>
       </Stack.Navigator>
       </NavigationContainer>
       </SafeAreaView>
