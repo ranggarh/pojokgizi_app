@@ -12,6 +12,9 @@ import FormPengukuran from "./components/formPengukuran";
 import DetailPengukuran from "./screens/detailPengukuran";
 import FormKalkulator from "./components/formKalkulator";
 import Bmi from "./screens/bmi";
+import GiziBalita from "./screens/kalkulator/giziBalita";
+import GiziAnakSekolah from "./screens/kalkulator/giziAnakSekolah";
+import GiziDewasa from "./screens/kalkulator/giziDewasa";
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -75,7 +78,10 @@ function App() {
           <Stack.Screen name="Pengukuran Status Gizi" component={AntroCalc}/>
           <Stack.Screen name="Tambah Pengukuran" component={FormPengukuran}/>
           <Stack.Screen name="Data Pengukuran" component={DetailPengukuran}/>
-          <Stack.Screen name="Kalkulator" component={FormKalkulator}/>
+          <Stack.Screen name="Gizi Balita" component={GiziBalita}/>
+          <Stack.Screen name="Gizi Anak Sekolah" component={GiziAnakSekolah}/>
+          <Stack.Screen name="Gizi Dewasa" component={GiziDewasa}/>
+
           <Stack.Screen name="Cek BMI Ideal" component={Bmi}/>
       </Stack.Navigator>
       </NavigationContainer>
