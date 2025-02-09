@@ -130,11 +130,11 @@ const Home = () => {
         <Box h={"$full"}>
             <Header />
             <ScrollView bg={"$white"}>
-                <Box bg={"#cbf5df"}>
+                <Box bg={"#14b454"}>
                     <HStack m={"$4"}>
                         <Box ml={"$1"} my={"$4"} w={"$2/3"}>
-                            <Text color={"$black"} fontFamily={"inter-bold"}>Selamat Datang, Pogizens</Text>
-                            <Text fontSize={"$sm"}>Jaga kesehatan gizi anda, Bersama Pojok Gizi Indonesia</Text>
+                            <Text color={"white"} fontFamily={"inter-bold"}>Selamat Datang, Pogizens</Text>
+                            <Text  color={"white"} fontSize={"$sm"}>Jaga kesehatan gizi anda, Bersama Pojok Gizi Indonesia</Text>
                         </Box>
                         <Box w={"$1/3"}>
                             <Image source={require("../assets/baby-weight.png")} alt="Pantau Tumbuh Kembang Anak Secara Berkala" mx={"$2"} style={{ height: 100, width: 190 }} mr={"$2"} />
@@ -144,18 +144,18 @@ const Home = () => {
                     </HStack>
                 </Box>
 
-                <Box bg={"#14b454"}>
+                <Box  bg={"#cbf5df"}>
                     <Box flexDirection={"row"} mt={"$4"} mx={"$4"}>
-                        <Box width={"$1"} h={24} bg={"white"}></Box>
-                        <Text ml={"$2"} fontSize={"$md"} color="white" fontFamily={"inter-bold"}>Perhitungan Kebutuhan Gizi</Text>
+                        <Box width={"$1"} h={24} bg={"#14b454"}></Box>
+                        <Text ml={"$2"} fontSize={"$md"} color="black" fontFamily={"inter-bold"}>Perhitungan Kebutuhan Gizi</Text>
                     </Box> 
                     <HStack mx={"$4"} my={"$4"} gap={"$2"}>
-                        <Box h={"$48"} w={"$45%"} bg="#fcbc3c" borderRadius={10} >
+                        <Box h={"$48"} w={"$45%"} bg={"#14b454"} borderRadius={10} >
 
                         </Box>
                         <Box h={"$48"} w={"$55%"} borderRadius={10} >
                             <Pressable onPress={() => navigation.navigate("Gizi Balita")} p={"$1"} h={"$1/3"} w={"$full"} >
-                                <Box flexDirection="row" alignItems="center" px={"$4"} bg="white" borderRadius={10} h={"$full"} w={"$full"}>
+                                <Box bg="#fcbc3c" flexDirection="row" alignItems="center" px={"$4"} bg="white" borderRadius={10} h={"$full"} w={"$full"}>
                                 <Image source={require("../assets/tryouticon.png")} alt="iconbmi" style={{ width: 30, height: 30 }} />
                                 <Text mx={"$2"} fontFamily={"inter-bold"} color={"black"} fontWeight={"$semibold"} fontSize={"$xs"}>Gizi Balita</Text>
                                 </Box>

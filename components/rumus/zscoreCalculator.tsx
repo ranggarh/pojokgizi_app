@@ -6,6 +6,10 @@ import balitaLakiLakiBBU from '../../data_static/balita_laki_laki/BBU.json';
 import balitaLakiLakiBBTB from '../../data_static/balita_laki_laki/BBTB.json';
 import balitaLakiLakiBBPB from '../../data_static/balita_laki_laki/BBPB.json';
 import balitaLakiLakiTBPBU from '../../data_static/balita_laki_laki/TBPBU.json';
+import balitaPerempuanBBU from '../../data_static/balita_perempuan/BBU.json';
+import balitaPerempuanBBTB from '../../data_static/balita_perempuan/BBTB.json';
+import balitaPerempuanBBPB from '../../data_static/balita_perempuan/BBPB.json';
+import balitaPerempuanTBPBU from '../../data_static/balita_perempuan/TBPBU.json';
 
 // Fungsi untuk memuat JSON berdasarkan jenis kelamin dan tipe data
 const loadJsonData = (gender: string, type: string) => {
@@ -18,7 +22,13 @@ const loadJsonData = (gender: string, type: string) => {
       default: throw new Error('Invalid type');
     }
   } else if (gender === 'Perempuan') {
-    // Implementasi untuk perempuan jika diperlukan
+    switch (type) {
+        case 'bbu': return balitaPerempuanBBU;
+        case 'bb_tb': return balitaPerempuanBBTB;
+        case 'bb_pb': return balitaPerempuanBBPB;
+        case 'tb_pb_per_u': return balitaPerempuanTBPBU;
+        default: throw new Error('Invalid type');
+      }
   }
   throw new Error('Invalid gender');
 };
