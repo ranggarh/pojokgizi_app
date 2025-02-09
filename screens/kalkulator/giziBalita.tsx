@@ -65,36 +65,42 @@ const GiziBalita = () => {
   const calculateCorrectedHeight = (pos: string) => {
     let correctedValue = 0;
 
-    // Determine which value to use based on age
+    // Hitung selisih usia dalam bulan
     const diff = new Date(measurementDate - birthDate);
-    const years = diff.getUTCFullYear() - 1970; // Calculate years
-    const months = diff.getUTCMonth(); // Calculate months
-    const totalMonths = years * 12 + months; // Total months
+    const years = diff.getUTCFullYear() - 1970; // Hitung tahun
+    const months = diff.getUTCMonth(); // Hitung bulan
+    const totalMonths = years * 12 + months; // Total bulan
 
+    // Tentukan nilai yang digunakan berdasarkan usia
     if (totalMonths < 24) {
-        // Under 2 years: use Panjang Badan
+        // Usia kurang dari 2 tahun: gunakan Panjang Badan
         correctedValue = parseFloat(panjangBadan) || 0;
         setCorrectedPanjangBadan(correctedValue.toFixed(2)); // Simpan hasil koreksi panjang badan
         setCorrectedHeight("-"); // Set TB Koreksi ke "-"
+        
+        // Logika untuk posisi pengukuran
+        if (pos === "Berdiri") {
+            correctedValue += 0.7; // Tambah 0.7 cm jika berdiri
+        }
     } else {
-        // 2 years and older: use Tinggi Badan
+        // Usia 2 tahun atau lebih: gunakan Tinggi Badan
         correctedValue = parseFloat(height) || 0;
         setCorrectedHeight(correctedValue.toFixed(2)); // Simpan hasil koreksi tinggi badan
         setCorrectedPanjangBadan("-"); // Set PB Koreksi ke "-"
+        
+        // Logika untuk posisi pengukuran
+        if (pos === "Terlentang") {
+            correctedValue -= 0.7; // Kurangi 0.7 cm jika terlentang
+        }
     }
 
-    // If standing, add 0.70 cm
-    if (pos === "Berdiri") {
-        correctedValue += 0.7;
-    }
-
-    // Update the corrected height or panjang badan based on position
+    // Update nilai koreksi berdasarkan usia
     if (totalMonths < 24) {
         setCorrectedPanjangBadan(correctedValue.toFixed(2));
     } else {
         setCorrectedHeight(correctedValue.toFixed(2));
     }
-  };
+};
 
 const calculateAge = () => {
   const diff = measurementDate.getTime() - birthDate.getTime();
