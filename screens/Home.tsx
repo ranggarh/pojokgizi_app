@@ -291,23 +291,23 @@ const Home = () => {
                 <Box bg={"#cbf5df"}>
                     <Box mx={12} my={"$6"}>
                         <HStack mx={"$4"} ml={"$1"} gap={"$3"}>
-                            <Button onPress={()=> setShowActionsheet(true)} borderRadius={10} w={"$1/2"} h={"$20"} bg={"white"}>
+                            <Button onPress={()=> setShowActionsheet(true)} borderRadius={10} w={"$1/2"} h={"$16"} bg={"white"}>
                                 <Image source={require("../assets/tryouticon.png")} alt="iconbmi" style={{ width: 30, height: 30 }} />
-                                <Text mx={"$2"} fontFamily={"inter-bold"} color={"black"} fontWeight={"$semibold"} fontSize={"$sm"}>Cek Kalori</Text>
+                                <Text mx={"$2"} fontFamily={"inter-bold"} color={"black"} fontWeight={"$semibold"} fontSize={"$xs"}>Cek Kalori</Text>
                             </Button>
-                            <Button borderRadius={10} w={"$1/2"} h={"$20"} bg={"white"} >
+                            <Button borderRadius={10} w={"$1/2"} h={"$16"} bg={"white"} >
                             <Image source={require("../assets/tryouticon.png")} alt="iconbmi" style={{ width: 30, height: 30 }} />
-                            <Text mx={"$2"} fontFamily={"inter-bold"} color={"black"} fontWeight={"$semibold"} fontSize={"$sm"}>Tryout Gizi</Text>
+                            <Text mx={"$2"} fontFamily={"inter-bold"} color={"black"} fontWeight={"$semibold"} fontSize={"$xs"}>Tryout Gizi</Text>
                             </Button>
                         </HStack>
                         <HStack mt={"$3"} mx={"$4"} ml={"$1"} gap={"$3"}>
-                            <Button borderRadius={10} w={"$1/2"} h={"$20"} bg={"white"} >
+                            <Button borderRadius={10} w={"$1/2"} h={"$16"} bg={"white"} >
                             <Image source={require("../assets/tryouticon.png")} alt="iconbmi" style={{ width: 30, height: 30 }} />
-                            <Text mx={"$2"} fontFamily={"inter-bold"} color={"black"} fontWeight={"$semibold"} fontSize={"$sm"}>Rumus Gizi</Text>
+                            <Text mx={"$2"} fontFamily={"inter-bold"} color={"black"} fontWeight={"$semibold"} fontSize={"$xs"}>Rumus Gizi</Text>
                             </Button>
-                            <Button borderRadius={10} w={"$1/2"} h={"$20"} bg={"white"} >
+                            <Button borderRadius={10} w={"$1/2"} h={"$16"} bg={"white"} >
                             <Image source={require("../assets/tryouticon.png")} alt="iconbmi" style={{ width: 30, height: 30 }} />
-                            <Text mx={"$2"} fontFamily={"inter-bold"} color={"black"} fontWeight={"$semibold"} fontSize={"$sm"}>Latihan Soal</Text>
+                            <Text mx={"$2"} fontFamily={"inter-bold"} color={"black"} fontWeight={"$semibold"} fontSize={"$xs"}>Latihan Soal</Text>
                             </Button>
                         </HStack>                
                     </Box>

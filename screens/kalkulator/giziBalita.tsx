@@ -33,7 +33,7 @@ import { SelectBackdrop } from "@gluestack-ui/themed";
 import { SelectDragIndicatorWrapper } from "@gluestack-ui/themed";
 import { SelectDragIndicator } from "@gluestack-ui/themed";
 import { SelectItem } from "@gluestack-ui/themed";
-import ZScoreCalculator from "../../components/rumus/zscoreCalculator";
+import ZScoreCalculator from "../../components/rumus/zscoreCalculatorBalita";
 
 
 interface navigation {
@@ -64,7 +64,7 @@ const GiziBalita = () => {
 
   const calculateCorrectedHeight = (pos: string) => {
     let correctedValue = 0;
-
+    
     // Hitung selisih usia dalam bulan
     const diff = new Date(measurementDate - birthDate);
     const years = diff.getUTCFullYear() - 1970; // Hitung tahun
