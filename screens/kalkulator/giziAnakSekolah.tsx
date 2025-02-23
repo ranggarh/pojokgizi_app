@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Box,
   Input,
@@ -15,6 +15,8 @@ import {
   RadioLabel,
   RadioIndicator,
   CircleIcon,
+  Button,
+  Accordion, AccordionItem, AccordionTrigger, AccordionContent,
 } from "@gluestack-ui/themed";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import DateTimePicker from "@react-native-community/datetimepicker";
@@ -35,6 +37,19 @@ const GiziAnakSekolah = () => {
   const [age, setAge] = useState("");
   const [ageInMonth, setAgeInMonth] = useState(0);
   const [submitted, setSubmitted] = useState(false);
+  const [selectedForm, setSelectedForm] = useState<"kalkulator" | "asupan">("kalkulator"); // State untuk memilih form
+  const [isOpen, setIsOpen] = useState(false);
+
+  const [kondisi, setKondisi] = useState("Kritis");
+  const [kategoriKritis, setKategoriKritis] = useState("");
+  const [BMR, setBMR] = useState(0);
+  const [TEE, setTEE] = useState(0);
+  const [metode, setMetode] = useState("");
+  const [dataInput, setDataInput] = useState(0);
+  const [proteinGram, setProteinGram] = useState(0);
+  const [proteinKkal, setProteinKkal] = useState(0);
+
+
   
 
   const navigation = useNavigation();
@@ -111,30 +126,163 @@ const GiziAnakSekolah = () => {
     }
 
     if (valid) {
-      setSubmitted(true);  // Show the results after submission
+      navigation.navigate("Hasil Perhitungan Anak Remaja", {name, gender, weight: parseFloat(weight), height: parseFloat(height), age: (ageInMonth), ageInYears: age});
     }
   };
+
+  const cekKategoriKritis = () => {
+    let kategori = "";
+  
+    if (kondisi === "Kritis") {
+      if (ageInMonth >= 60 && ageInMonth <= 108) { // 5 - 9 tahun (60 - 108 bulan)
+        kategori = `Kritis ${gender} 5 - 9 tahun`;
+      } else if (ageInMonth > 108 && ageInMonth <= 216) { // 10 - 18 tahun (108 - 216 bulan)
+        kategori = `Kritis ${gender} 10 - 18 tahun`;
+      } else {
+        kategori = "Usia tidak termasuk dalam kategori kritis";
+      }
+    } else {
+      if (ageInMonth >= 60 && ageInMonth <= 108) { // 5 - 9 tahun (60 - 108 bulan)
+        kategori = `Tidak Kritis ${gender} 5 - 9 tahun`;
+      } else if (ageInMonth > 108 && ageInMonth <= 216) { // 10 - 18 tahun (108 - 216 bulan)
+        kategori = `Tidak Kritis ${gender} 10 - 18 tahun`;
+      } else {
+        kategori = "Usia tidak termasuk dalam kategori tidak kritis";
+      }
+    }
+  
+    setKategoriKritis(kategori);
+  };
+  
+  useEffect(() => {
+    cekKategoriKritis();
+  }, [ageInMonth, gender, kondisi])
+
+  const hitungBMRdanTEE = (kategori, weight, height) => {
+    let BMR = 0;
+    let TEE = 0;
+  
+    switch (kategori) {
+      case "Kritis Laki Laki 5 - 9 tahun":
+        BMR = (19.6 * weight) + (1.30 * height) + 414.9;
+        TEE = BMR + 40;
+        break;
+      case "Tidak Kritis Laki Laki 5 - 9 tahun":
+        BMR = (22.706 * weight) + 504.3;
+        TEE = BMR + 40;
+        break;
+      case "Kritis Laki Laki 10 - 18 tahun":
+        BMR = (16.25 * weight) + (1.372 * height) + 515.5;
+        TEE = BMR + 40;
+        break;
+      case "Tidak Kritis Laki Laki 10 - 18 tahun":
+        BMR = (13.384 * weight) + 692.6;
+        TEE = BMR + 40;
+        break;
+      case "Kritis Perempuan 5 - 9 tahun":
+        BMR = (16.97 * weight) + (1.61 * height) + 371.2;
+        TEE = BMR + 40;
+        break;
+      case "Tidak Kritis Perempuan 5 - 9 tahun":
+        BMR = (20.315 * weight) + 485.9;
+        TEE = BMR + 40;
+        break;
+      case "Kritis Perempuan 10 - 18 tahun":
+        BMR = (8.365 * weight) + (4.65 * height) + 200;
+        TEE = BMR + 40;
+        break;
+      case "Tidak Kritis Perempuan 10 - 18 tahun":
+        BMR = (17.686 * weight) + 658.2;
+        TEE = BMR + 40;
+        break;
+      default:
+        BMR = 0;
+        TEE = 0;
+    }
+  
+    return { BMR, TEE };
+  };
+  
+  useEffect(() => {
+    const { BMR, TEE } = hitungBMRdanTEE(kategoriKritis, weight, height);
+    setBMR(BMR);
+    setTEE(TEE);
+  }, [kategoriKritis, weight, height]);
+
+  const hitungProtein = (metode, dataInput, weight, TEE) => {
+    console.log(`Metode: ${metode}, Input: ${dataInput}, Weight: ${weight}, TEE: ${TEE}`);
+    let proteinGram = 0;
+    let proteinKkal = 0;
+  
+    if (!isNaN(dataInput)) {
+      if (metode === "gram protein") {
+        proteinGram = dataInput * weight;
+        proteinKkal = proteinGram * 4;
+      } else if (metode === "persentase") {
+        proteinKkal = TEE * (dataInput / 100);
+        proteinGram = proteinKkal / 4;
+      }
+    }
+
+    console.log(`Protein (g): ${proteinGram}, Protein (kkal): ${proteinKkal}`);
+  
+    return { proteinGram, proteinKkal };
+  };
+  
+  useEffect(() => {
+    const { proteinGram, proteinKkal } = hitungProtein(metode, dataInput, weight, TEE);
+    setProteinGram(proteinGram);
+    setProteinKkal(proteinKkal);
+  }, [metode, dataInput, weight, TEE]);
+  
   return (
     <Box flex={1} justifyContent="space-between">
       <Box width="100%" h={120} bg={"#23b160"} flexDirection="row" justifyContent="space-between">
-        <Box width={"$48"}>
+        <Box width={"$35%"}>
           <Image 
             source={require("../../assets/math.png")} 
             alt="Pantau Tumbuh Kembang Anak Secara Berkala" 
-            width={150} 
+            width={160} 
             height={150} 
-            ml={"$3"}
+            ml={"$2"}
           />
         </Box>
-        <Box width={"$64"} ml={"-$10"}>
-          <Text fontSize={"$lg"} m={"$4"} fontWeight={"$bold"} color={"white"}>Kalkulator Status Gizi</Text>
-          <Text fontSize={"$sm"} maxWidth={"$56"} ml={"$4"} mt={"-$2"} color={"white"}>Hitung Data Pengukuran Status Gizi Anda di sini Bersama PojokGizi Indonesia.</Text>
+        <Box width={"$65%"} mx={"$2"}>
+          <Text fontSize={"$lg"} m={"$4"}  fontWeight={"$bold"} color={"white"}>Kalkulator Status Gizi</Text>
+          <Text fontSize={"$sm"} m={"$4"} mt={"-$2"} color={"white"}>Hitung Data Pengukuran Status Gizi Anda di sini Bersama PojokGizi Indonesia.</Text>
         </Box>
       </Box>
       <ScrollView
         backgroundColor="white"
         contentContainerStyle={{ flexGrow: 1, padding: 16 }}
       >
+        <HStack alignSelf="center">
+          <Button
+            width={"$50%"}
+            h={"$12"}
+            bg={selectedForm === "kalkulator" ? "#23b160" : "#E0E0E0"} // Warna berubah saat dipilih
+            onPress={() => setSelectedForm("kalkulator")}
+            borderStartStartRadius={50}
+            borderStartEndRadius={50}
+            borderTopEndRadius={0}
+            borderBottomEndRadius={0}
+          >
+            <Text color={selectedForm === "kalkulator" ? "white" : "black"} fontWeight={"$bold"}>Kalkulator Gizi</Text>
+          </Button>
+          <Button
+            width={"$50%"}
+            h={"$12"}
+            bg={selectedForm === "asupan" ? "#23b160" : "#E0E0E0"} // Warna berubah saat dipilih
+            onPress={() => setSelectedForm("asupan")}
+            borderTopStartRadius={0}
+            borderBottomStartRadius={0}
+            borderEndStartRadius={50}
+            borderEndEndRadius={50}
+          >
+            <Text color={selectedForm === "asupan" ? "white" : "black"} fontWeight={"$bold"}>Kebutuhan Asupan</Text>
+          </Button>
+        </HStack>
+        {selectedForm === "kalkulator" ? (
         <Box>
           {/* Nama Pengukuran */}
           <Box marginBottom={"$2"} my={"$2"}>
@@ -209,7 +357,7 @@ const GiziAnakSekolah = () => {
             {errors.gender ? <Text color="red" fontSize="$sm">{errors.gender}</Text> : null}
           </Box>
           {/* Deskripsi Pengukuran */}
-          <HStack justifyContent="space-between">
+          <HStack justifyContent="space-between" mb={"$4"}>
             <Box marginBottom={4} my={"$4"} width="50%" ml={"-$0.5"} mr={"$1"}>
               <Text fontSize={"$md"} fontWeight={"$semibold"} marginBottom={"$2"} color="gray.600">
                 Berat Badan (kg)
@@ -243,7 +391,158 @@ const GiziAnakSekolah = () => {
               </Input>
             </Box>
           </HStack> */}
+          <Box mb="$4" mb={"$20"}>
+            <Pressable onPress={() => setIsOpen(!isOpen)}>
+              <Box bg="#23b160" w="$full" h="$12" justifyContent="center" >
+                <Text color="white" fontWeight="$bold" ml="$4">{isOpen ? "Kebutuhan Energi" : "Kebutuhan Energi"} (Opsional)</Text>
+              </Box>
+            </Pressable>
+            {/* Form (tampil hanya jika isOpen true) */}
+            {isOpen && (
+              <Box > 
+                <Box ml="$4" minWidth="$8" borderRadius="$sm" alignSelf="flex-start" px="$4" h="$8" mt="$4" justifyContent="center" bg="#F98D3A"><Text color="white" fontWeight="$bold" fontSize="$sm">Kebutuhan Energi</Text></Box>
+                <Box mx="$4">
+                <Box marginBottom={"$4"} my={"$4"}>
+                  <Text fontSize={"$md"} fontWeight={"$semibold"} marginBottom={"$2"} color="gray.600">
+                    Kondisi Fisik
+                  </Text>
+                  <RadioGroup value={kondisi} onChange={setKondisi}>
+                    <HStack space="2xl">
+                      <Radio value="Kritis">
+                        <RadioIndicator mr="$2">
+                          <RadioIcon as={CircleIcon} color="#23b160" />
+                        </RadioIndicator>
+                        <RadioLabel>Kritis</RadioLabel>
+                      </Radio>
+                      <Radio value="Tidak Kritis">
+                        <RadioIndicator mr="$2">
+                          <RadioIcon as={CircleIcon} color="#23b160" />
+                        </RadioIndicator>
+                        <RadioLabel>Tidak Kritis</RadioLabel>
+                      </Radio>
+                    </HStack>
+                  </RadioGroup>
+                </Box>
+                  {kategoriKritis && (
+                    <Box>
+                      <Input isDisabled={true} padding="$2" width="100%" backgroundColor="gray.100">
+                      <Text fontSize="$md" fontWeight="$bold" color="red.600">
+                        {kategoriKritis}
+                      </Text>
+                      </Input>
+                      <HStack justifyContent="space-between" mb={"$4"}>
+                        <Box marginBottom={4} my={"$4"} width="50%" ml={"-$0.5"} mr={"$1"}>
+                          <Text fontSize={"$md"} fontWeight={"$semibold"} marginBottom={"$2"} color="gray.600">
+                            BMR
+                          </Text>
+                          <Input isDisabled={true} padding={"$2"} width="100%" backgroundColor="gray.100">
+                          <Text fontSize="$md" fontWeight="$bold" color="red.600">
+                            {BMR}
+                            </Text>
+                          </Input>
+                        </Box>
+                        <Box marginBottom={4} my={"$4"} width="50%">
+                          <Text fontSize={"$md"} fontWeight={"$semibold"} marginBottom={"$2"} color="gray.600">
+                            TEE
+                          </Text>
+                          <Input isDisabled={true} width="100%" padding={"$2"} backgroundColor="gray.100">
+                          <Text fontSize="$md" fontWeight="$bold" color="red.600">
+                            {TEE}
+                          </Text>
+                          </Input>
+                        </Box>
+                      </HStack>
+                    </Box>
+                    
+                  )}
+                </Box>
+
+                <Box ml="$4" minWidth="$8" borderRadius="$sm" alignSelf="flex-start" px="$4" h="$8" justifyContent="center" bg="#F98D3A">
+                  <Text color="white" fontSize="$sm" fontWeight="$bold">Kebutuhan Protein</Text>
+                </Box>
+                <Box mx="$4">
+                  <Box marginBottom={"$4"} my={"$4"}>
+                    <Text fontSize={"$md"} fontWeight={"$semibold"} marginBottom={"$2"} color="gray.600">
+                      Metode
+                    </Text>
+                    <RadioGroup value={metode} onChange={setMetode}>
+                      <HStack space="2xl">
+                        <Radio value="gram protein">
+                          <RadioIndicator mr="$2">
+                            <RadioIcon as={CircleIcon} color="#23b160" />
+                          </RadioIndicator>
+                          <RadioLabel>Gram x BB Aktual</RadioLabel>
+                        </Radio>
+                        <Radio value="persentase">
+                          <RadioIndicator mr="$2">
+                            <RadioIcon as={CircleIcon} color="#23b160" />
+                          </RadioIndicator>
+                          <RadioLabel>Persentase TEE</RadioLabel>
+                        </Radio>
+                      </HStack>
+                    </RadioGroup>
+                  </Box>
+                  {kategoriKritis && (
+                    <Box mb={"$4"}>
+                      <Text fontSize={"$md"} fontWeight={"$semibold"} marginBottom={"$2"} color="gray.600">
+                        {metode === "gram protein" ? "Gram Protein" : "Persentase Protein"}
+                      </Text>
+                      <Input padding="$2" width="100%" backgroundColor="gray.100">
+                        <InputField
+                          keyboardType="numeric"
+                          placeholder="Enter Text here"
+                          onChangeText={(text) => {
+                            const value = parseFloat(text);
+                            setDataInput(isNaN(value) ? 0 : value); // Set to 0 if NaN
+                          }}
+                        />
+                      </Input>
+                      <HStack justifyContent="space-between" mb={"$4"}>
+                        <Box marginBottom={4} my={"$4"} width="50%" ml={"-$0.5"} mr={"$1"}>
+                          <Text fontSize={"$md"} fontWeight={"$semibold"} marginBottom={"$2"} color="gray.600">
+                            Protein (g)
+                          </Text>
+                          <Input isDisabled={true} padding={"$2"} width="100%" backgroundColor="gray.100">
+                            <Text fontSize="$md" fontWeight="$bold" color="red.600">
+                              {proteinGram}
+                            </Text>
+                          </Input>
+                        </Box>
+                        <Box marginBottom={4} my={"$4"} width="50%">
+                          <Text fontSize={"$md"} fontWeight={"$semibold"} marginBottom={"$2"} color="gray.600">
+                            Protein (kkal)
+                          </Text>
+                          <Input isDisabled={true} width="100%" padding={"$2"} backgroundColor="gray.100">
+                            <Text fontSize="$md" fontWeight="$bold" color="red.600">
+                              {proteinKkal}
+                            </Text>
+                          </Input>
+                        </Box>
+                      </HStack>
+                    </Box>
+                  )}
+                </Box>
+              </Box>
+              
+            )}
+          </Box>
+          
         </Box>
+
+
+        ) : (
+          <Box>
+            <Text fontSize={"$md"} fontWeight={"$semibold"} my={"$4"} color="gray.600">
+              Form Kebutuhan Asupan
+            </Text>
+            <Input padding={"$2"} width="100%" backgroundColor="gray.100">
+              <InputField placeholder="Berat Badan (kg)" />
+            </Input>
+            <Input padding={"$2"} width="100%" backgroundColor="gray.100" mt={"$2"}>
+              <InputField placeholder="Tinggi Badan (cm)" />
+            </Input>
+          </Box>
+        )}
       </ScrollView>
       {/* DateTimePicker */}
       {showPicker.visible && (
@@ -270,22 +569,7 @@ const GiziAnakSekolah = () => {
         <Text textAlign="center" my={"$4"} color="white">Simpan Pengukuran</Text>
       </Pressable>
 
-      {submitted && (
-      <>
-        {console.log("Memanggil ZScoreCalculator dengan data:", {
-          age: ageInMonth,
-          weight: parseFloat(weight),
-          height: parseFloat(height),
-          gender: gender
-        })}
-        <ZScoreCalculator 
-          age={ageInMonth} 
-          weight={parseFloat(weight)} 
-          height={parseFloat(height) || null}
-          gender={gender}
-        />
-      </>
-    )}
+      
 
     </Box>
   );

@@ -166,13 +166,11 @@ const calculateAge = () => {
     if (months < 24) {
       // Usia < 2 Tahun: Validasi Panjang Badan saja
       if (!panjangBadan) {
-        setErrors(prev => ({ ...prev, panjangBadan: 'Panjang Badan tidak boleh kosong' }));
         valid = false;
       }
     } else {
       // Usia >= 2 Tahun: Validasi Tinggi Badan saja
       if (!height) {
-        setErrors(prev => ({ ...prev, height: 'Tinggi Badan tidak boleh kosong' }));
         valid = false;
       }
     }
@@ -197,8 +195,7 @@ const calculateAge = () => {
     }
 
     if (valid) {
-      // Navigate to the next screen if all validations pass
-      navigation.navigate('Data Pengukuran');
+      navigation.navigate('Hasil Perhitungan Balita', { posisiPengukuran, name, age: Number(ageInDays), ageInYears: age, gender, weight: parseFloat(weight), height: parseFloat(correctedHeight), panjangBadan: parseFloat(correctedPanjangBadan)});
     }
   };
 
@@ -357,7 +354,6 @@ const calculateAge = () => {
                     </SelectContent>
                 </SelectPortal>
             </Select>
-            {errors.panjangBadan ? <Text color="red" fontSize="$sm">{errors.panjangBadan}</Text> : null}
           </Box>
           <Box marginBottom={"$20"} my={"$4"} width="50%">
             <Text fontSize={"$md"} fontWeight={"$semibold"} marginBottom={"$2"} color="gray.600">
@@ -408,30 +404,11 @@ const calculateAge = () => {
         bottom={0}
         left={0}
         right={0}
-        onPress={() => setSubmitted(true)}      >
+        onPress={handleSubmit} >
         <Text textAlign="center" my={"$4"} color="white">Simpan Pengukuran</Text>
       </Pressable>
       
-      {submitted && (
-        <>
-          
-          <ZScoreCalculator 
-            age={ageInDays} 
-            weight={parseFloat(weight)} 
-            height={parseFloat(correctedHeight ) || null}
-            panjangBadan={parseFloat(correctedPanjangBadan) || null}
-            gender={gender}
-          />
-          {console.log("Data yang dikirim ke ZScoreCalculator:", {
-            age: ageInDays,
-            weight: parseFloat(weight),
-            height: parseFloat(correctedHeight),
-            panjangBadan: parseFloat(correctedPanjangBadan),
-            gender: gender
-          })}
-        </>
-      )}
-
+     
     </Box>
   );
 };

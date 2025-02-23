@@ -8,6 +8,7 @@ import { useState, useCallback, useEffect } from "react";
 import * as Font from 'expo-font';
 import { PanResponder } from 'react-native';
 import { Actionsheet, ActionsheetItem, ActionsheetContent, ActionsheetItemText, ActionsheetBackdrop, ActionsheetDragIndicator, ActionsheetDragIndicatorWrapper } from '@gluestack-ui/themed';
+import GrowthChart from "../components/grafik";
 
 const features = [
     { id: "1", name: "Dewasa & Maternal", icon: require("../assets/bmi.png") },
@@ -129,8 +130,30 @@ const Home = () => {
     return (
         <Box h={"$full"}>
             <Header />
-            <ScrollView bg={"$white"}>
-                <Box bg={"#14b454"}>
+            <ScrollView bg={"white"} >
+                {/* Section 2 Monitoring Status Gizi */}
+                <Box mx={12} my={"$5"} mt={"$5"} borderRadius={5}>
+                    <Box flexDirection={"row"} mb={"$1"}>
+                        <Box width={"$1"} h={22} bg={"#23b160"}></Box>
+                        <Text mb={"$3"} ml={"$2"} fontSize={"$sm"} fontFamily={"inter-bold"} >Monitoring Status Gizi</Text>
+                    </Box>
+                    <Box width={"$full"} borderRadius={5} h={180} bg={"#23b160"} flexDirection={"row"}>
+                        <Box width={"$1/3"} borderRadius={5} h={"$full"} bg={"#23b160"}>
+                            <Image source={require("../assets/baby-weight.png")} alt="Pantau Tumbuh Kembang Anak Secara Berkala" width={"100%"} mx={"$2"} style={{ height: 150 }} my={"$2"} ml={"$3"} />
+                        </Box>
+                        <Box width={"$2/3"} borderRadius={5} h={"$full"} bg={"#23b160"} p={"$4"}>
+                            <Box width={"$full"} h={"$full"}>
+                                <Text color={"white"} fontSize={"$md"} fontFamily={"inter-bold"}>Pantau Tumbuh Kembang Anak Secara Berkala</Text>
+                                <Text color={"white"} fontFamily="inter-regular" my={"$1"} mb={"$3"} fontSize={"$xs"}>Monitoring Status Gizi Bersama PojokGizi Indonesia</Text>
+                                <Button bg={"#efad4d"}>
+                                    <Text fontFamily={"inter-bold"} color={"white"} fontWeight={"$semibold"} fontSize={"$md"}>Tambah Data</Text>
+                                </Button>
+                            </Box>
+                        </Box>
+                    </Box>
+                </Box>
+
+                {/* <Box bg={"#3D8D7A"}>
                     <HStack m={"$4"}>
                         <Box ml={"$1"} my={"$4"} w={"$2/3"}>
                             <Text color={"white"} fontFamily={"inter-bold"}>Selamat Datang, Pogizens</Text>
@@ -142,45 +165,14 @@ const Home = () => {
                         
                         
                     </HStack>
-                </Box>
+                </Box> */}
 
                 <Box  bg={"#cbf5df"}>
                     <Box flexDirection={"row"} mt={"$4"} mx={"$4"}>
-                        <Box width={"$1"} h={24} bg={"#14b454"}></Box>
-                        <Text ml={"$2"} fontSize={"$md"} color="black" fontFamily={"inter-bold"}>Perhitungan Kebutuhan Gizi</Text>
-                    </Box> 
-                    <HStack mx={"$4"} my={"$4"} gap={"$2"}>
-                        <Box h={"$48"} w={"$45%"} bg={"#14b454"} borderRadius={10} >
-
-                        </Box>
-                        <Box h={"$48"} w={"$55%"} borderRadius={10} >
-                            <Pressable onPress={() => navigation.navigate("Gizi Balita")} p={"$1"} h={"$1/3"} w={"$full"} >
-                                <Box bg="#fcbc3c" flexDirection="row" alignItems="center" px={"$4"} bg="white" borderRadius={10} h={"$full"} w={"$full"}>
-                                <Image source={require("../assets/tryouticon.png")} alt="iconbmi" style={{ width: 30, height: 30 }} />
-                                <Text mx={"$2"} fontFamily={"inter-bold"} color={"black"} fontWeight={"$semibold"} fontSize={"$xs"}>Gizi Balita</Text>
-                                </Box>
-                            </Pressable>
-                            <Pressable onPress={() => navigation.navigate("Gizi Anak Sekolah")} p={"$1"} h={"$1/3"} w={"$full"} >
-                            <Box flexDirection="row" alignItems="center" px={"$4"} bg="white" h={"$full"} borderRadius={10} w={"$full"}>
-                            <Image source={require("../assets/tryouticon.png")} alt="iconbmi" style={{ width: 30, height: 30 }} />
-                            <Text mx={"$2"} fontFamily={"inter-bold"} color={"black"} fontWeight={"$semibold"} fontSize={"$xs"}>Gizi Anak Sekolah</Text>
-                            </Box>
-                            </Pressable>
-                            <Pressable onPress={() => navigation.navigate("Gizi Dewasa")} p={"$1"} h={"$1/3"} w={"$full"} >
-                            <Box flexDirection="row" alignItems="center" px={"$4"} bg="white" h={"$full"} borderRadius={10} w={"$full"}>
-                            <Image source={require("../assets/tryouticon.png")} alt="iconbmi" style={{ width: 30, height: 30 }} />
-                            <Text mx={"$2"} fontFamily={"inter-bold"} color={"black"} fontWeight={"$semibold"} fontSize={"$xs"}>Gizi Dewasa</Text>
-                            </Box>
-                            </Pressable>
-                        </Box>
-                        <VStack>
-                            <Box></Box>
-                            <Box></Box>
-                        </VStack>
-                        
-                    </HStack>
-
-                    <ScrollView mx={"$3"} mb={"$5"} ml={"$4"} horizontal showsHorizontalScrollIndicator={false}>
+                        <Box width={"$1"} h={22} bg={"#14b454"}></Box>
+                        <Text ml={"$2"} fontSize={"$sm"} color="$black" fontFamily={"inter-bold"} >Perhitungan Status Gizi</Text>
+                    </Box>                         
+                    <ScrollView mx={"$3"} mb={"$2"} mt={"$2"} ml={"$4"} horizontal showsHorizontalScrollIndicator={false}>
                         <HStack flex={1} justifyContent="space-around" borderRadius={5} gap={"$2"}>
                             {features &&
                                 features.map((item) => (
@@ -210,33 +202,14 @@ const Home = () => {
                                 ))}
                         </HStack>
                     </ScrollView>
+    
                 </Box>
 
                 {/* Section 3 Fitur Fitur Lain */}
                 {/* <Box mx={12}>
                     
                 </Box> */}
-                {/* Section 2 Monitoring Status Gizi */}
-                <Box mx={12} my={"$5"} mt={"$5"} borderRadius={5}>
-                    <Box flexDirection={"row"} mb={"$1"}>
-                        <Box width={"$1"} h={24} bg={"#23b160"}></Box>
-                        <Text mb={"$3"} ml={"$2"} fontSize={"$md"} fontFamily={"inter-bold"} >Monitoring Status Gizi</Text>
-                    </Box>
-                    <Box width={"$full"} borderRadius={5} h={165} bg={"#23b160"} flexDirection={"row"}>
-                        <Box width={"$1/3"} borderRadius={5} h={"$full"} bg={"#23b160"}>
-                            <Image source={require("../assets/baby-weight.png")} alt="Pantau Tumbuh Kembang Anak Secara Berkala" width={"100%"} mx={"$2"} style={{ height: 150 }} my={"$2"} ml={"$3"} />
-                        </Box>
-                        <Box width={"$2/3"} borderRadius={5} h={"$full"} bg={"#23b160"} p={"$4"}>
-                            <Box width={"$full"} h={"$full"}>
-                                <Text color={"white"} fontSize={"$md"} fontFamily={"inter-bold"}>Pantau Tumbuh Kembang Anak Secara Berkala</Text>
-                                <Text color={"white"} fontFamily="inter-regular" my={"$1"} mb={"$3"} fontSize={"$xs"}>Monitoring Status Gizi Bersama PojokGizi Indonesia</Text>
-                                <Button bg={"#efad4d"}>
-                                    <Text fontFamily={"inter-bold"} color={"white"} fontWeight={"$semibold"} fontSize={"$md"}>Tambah Data</Text>
-                                </Button>
-                            </Box>
-                        </Box>
-                    </Box>
-                </Box>
+                
 
                 {/* <Box mx={12}>
                     <Box flexDirection={"row"} mb={"$1"}>
@@ -283,12 +256,12 @@ const Home = () => {
                             </HStack>
                         </VStack>
                         <ActionsheetItem onPress={() => navigationTo("Pengukuran Status Gizi")}>
-                            <ActionsheetItemText textAlign="center" fontWeight="$bold" mx={"$auto"} w={"$full"} bg="#23b160" color="white" py={"$4"}>Lewati</ActionsheetItemText>
+                            <ActionsheetItemText textAlign="center" fontWeight="$bold" w={"$full"} bg="#23b160" color="white" py={"$4"}>Lewati</ActionsheetItemText>
                         </ActionsheetItem>
                     </ActionsheetContent>
                 </Actionsheet>
 
-                <Box bg={"#cbf5df"}>
+                {/* <Box bg={"#cbf5df"}>
                     <Box mx={12} my={"$6"}>
                         <HStack mx={"$4"} ml={"$1"} gap={"$3"}>
                             <Button onPress={()=> setShowActionsheet(true)} borderRadius={10} w={"$1/2"} h={"$16"} bg={"white"}>
@@ -311,31 +284,64 @@ const Home = () => {
                             </Button>
                         </HStack>                
                     </Box>
-                </Box>
 
+                </Box> */}
+                
+                {/* <Box bg={"#cbf5df"}>
+                <Box flexDirection={"row"} mt={"$4"} mx={"$4"}>
+                        <Box width={"$1"} h={22} bg={"#14b454"}></Box>
+                        <Text ml={"$2"} fontSize={"$sm"} color="black" fontFamily={"inter-bold"}>Perhitungan Kebutuhan Gizi</Text>
+                </Box>
+                    <Box mx={12} my={"$6"} gap={"$1"} >
+                            <Button justifyContent="flex-start" onPress={()=> setShowActionsheet(true)} borderRadius={5} w={"$full"} h={"$16"} bg={"white"}>
+                                <Image source={require("../assets/tryouticon.png")} alt="iconbmi" style={{ width: 30, height: 30 }} />
+                                <Text mx={"$2"} fontFamily={"inter-bold"} color={"black"} fontWeight={"$semibold"} fontSize={"$xs"}>Cek Kalori</Text>
+                            </Button>
+                            <Button justifyContent="flex-start" onPress={()=> setShowActionsheet(true)} borderRadius={5} w={"$full"} h={"$16"} bg={"white"}>
+                                <Image source={require("../assets/tryouticon.png")} alt="iconbmi" style={{ width: 30, height: 30 }} />
+                                <Text mx={"$2"} fontFamily={"inter-bold"} color={"black"} fontWeight={"$semibold"} fontSize={"$xs"}>Cek Kalori</Text>
+                            </Button>
+                            <Button justifyContent="flex-start" onPress={()=> setShowActionsheet(true)} borderRadius={5} w={"$full"} h={"$16"} bg={"white"}>
+                                <Image source={require("../assets/tryouticon.png")} alt="iconbmi" style={{ width: 30, height: 30 }} />
+                                <Text mx={"$2"} fontFamily={"inter-bold"} color={"black"} fontWeight={"$semibold"} fontSize={"$xs"}>Cek Kalori</Text>
+                            </Button>
+                            <Button justifyContent="flex-start" onPress={()=> setShowActionsheet(true)} borderRadius={5} w={"$full"} h={"$16"} bg={"white"}>
+                                <Image source={require("../assets/tryouticon.png")} alt="iconbmi" style={{ width: 30, height: 30 }} />
+                                <Text mx={"$2"} fontFamily={"inter-bold"} color={"black"} fontWeight={"$semibold"} fontSize={"$xs"}>Cek Kalori</Text>
+                            </Button>            
+                    </Box>
+                </Box> */}
                 
 
                 {/* Section 4 Deteksi Dini Kesehatan Gizi*/}
-                {/* <Box mx={12} my={"$5"} borderRadius={5}>
+                <Box mx={12} my={"$5"} borderRadius={5}>
                     <Box flexDirection={"row"} mb={"$1"}>
                         <Box width={"$1"} h={24} bg={"#23b160"}></Box>
                         <Text mb={"$3"} ml={"$2"} fontSize={"$md"} fontFamily={"inter-bold"}>Deteksi Dini Kesehatan Gizi</Text>
                     </Box>                    
-                    <Box width={"$full"} borderRadius={5} h={160} p={"$4"} bg={"#23b160"} flexDirection={"row"}>
-                        <Box width={"$2/3"} borderRadius={5} h={"$full"} bg={"#23b160"} mr={"$2"}>
-                            <Box width={"$full"} h={"$full"}>
-                                <Text color={"white"} fontSize={"$md"} fontFamily={"inter-bold"}>Saat Ini Anda Mengalami Masalah Kesehatan Gizi?</Text>
-                                <Text color={"white"} my={"$1"} mb={"$2"} fontSize={"$xs"} fontFamily="inter-regular">Deteksi Sekarang Bersama PojokGizi Indonesia</Text>
-                                <Button bg={"#efad4d"} alignSelf="flex-start">
-                                    <Text color={"white"} fontFamily={"inter-bold"} fontSize={"$md"}>Periksa Sekarang</Text>
-                                </Button>
+                    <Box width={"$full"} gap={"$2"} borderRadius={5} h={200} p={"$4"} bg={"#23b160"} flexDirection={"row"}>
+                        <Box width={"$2/3"} mx borderRadius={5} h={"$full"} bg={"#23b160"} mr={"$2"}>
+                            <Box width={"$full"}  h={"$full"}>
+                                <Text color={"white"} fontSize={"$sm"} fontFamily={"inter-bold"}>Saat Ini Anda Mengalami Masalah Kesehatan Gizi?</Text>
+                                <Pressable  onPress={() => navigation.navigate("Gizi Balita")} p={"$1"} mt={"$2"} ml={"-$1"} h={"$16"} >
+                                    <Box  bg="white" flexDirection="row" alignItems="center" px={"$4"} borderRadius={5} h={"$full"} w={"$full"}>
+                                        <Image source={require("../assets/tryouticon.png")} alt="iconbmi" style={{ width: 30, height: 30 }} />
+                                        <Text mx={"$2"} fontFamily={"inter-bold"} color={"black"} fontWeight={"$semibold"} fontSize={"$xs"}>Gizi Balita</Text>
+                                    </Box>
+                                </Pressable>
+                                <Pressable  onPress={() => navigation.navigate("Gizi Anak Sekolah")} p={"$1"} h={"$16"} ml={"-$1"}>
+                                    <Box  bg="white" flexDirection="row" alignItems="center" px={"$4"} borderRadius={5} h={"$full"} w={"$full"}>
+                                        <Image source={require("../assets/tryouticon.png")} alt="iconbmi" style={{ width: 30, height: 30 }} />
+                                        <Text mx={"$2"} fontFamily={"inter-bold"} color={"black"} fontWeight={"$semibold"} fontSize={"$xs"}>Gizi Anak Sekolah</Text>
+                                    </Box>
+                                </Pressable>
                             </Box>
                         </Box>
                         <Box width={"$1/3"} borderRadius={5} h={"$full"} bg={"#23b160"}>
                             <Image source={require("../assets/insurance.png")} alt="Deteksi Dini Kesehatan Gizi" width={180} my={"-$3"} mx={"-$3"} style={{ height: 160 }} />
                         </Box>
                     </Box>
-                </Box> */}
+                </Box>
 
                 {/* Section 5 Kumpulan Artikel */}
                 <Box mx={12} mt={"$5"} mb={"$10"}>
