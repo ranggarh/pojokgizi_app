@@ -15,14 +15,12 @@ import {
   RadioLabel,
   RadioIndicator,
   CircleIcon,
-  Button,
-  Accordion, AccordionItem, AccordionTrigger, AccordionContent,
 } from "@gluestack-ui/themed";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { Platform } from "react-native";
 import { useNavigation } from "@react-navigation/native";
-import ZScoreCalculator from "../../components/rumus/zscoreCalculatorAnakRemaja";
+import { VStack } from "@gluestack-ui/themed";
 
 const GiziAnakSekolah = () => {
   const [measurementDate, setMeasurementDate] = useState(new Date());
@@ -33,13 +31,10 @@ const GiziAnakSekolah = () => {
   const [weight, setWeight] = useState("");
   const [height, setHeight] = useState("");
   const [errors, setErrors] = useState({ name: '', gender: '', weight: '', height: '', birthDate: '', measurementDate: '' });
-  const [imt, setImt] = useState<number | null>(null); // State untuk IMT
   const [age, setAge] = useState("");
   const [ageInMonth, setAgeInMonth] = useState(0);
-  const [submitted, setSubmitted] = useState(false);
   const [selectedForm, setSelectedForm] = useState<"kalkulator" | "asupan">("kalkulator"); // State untuk memilih form
   const [isOpen, setIsOpen] = useState(false);
-
   const [kondisi, setKondisi] = useState("Kritis");
   const [kategoriKritis, setKategoriKritis] = useState("");
   const [BMR, setBMR] = useState(0);
@@ -48,25 +43,25 @@ const GiziAnakSekolah = () => {
   const [dataInput, setDataInput] = useState(0);
   const [proteinGram, setProteinGram] = useState(0);
   const [proteinKkal, setProteinKkal] = useState(0);
-
-
-  
+  const [persenLemak, setPersenLemak] = useState(0);
+  const [lemakKkal, setLemakKkal] = useState(0);
+  const [lemakGram, setLemakGram] = useState(0);
+  const [metodeKarbo, setMetodeKarbo] = useState("");
+  const [persenKarbo, setPersenKarbo] = useState(0);
+  const [karboKkal, setKarboKkal] = useState(0);
+  const [karboGram, setKarboGram] = useState(0);
 
   const navigation = useNavigation();
 
-  
-
   const calculateAge = () => {
     const diff = measurementDate.getTime() - birthDate.getTime();
-    const totalMonths = Math.floor(diff / (1000 * 60 * 60 * 24 * 30.44)); // 30.44 hari dalam 1 bulan rata-rata
-  
+    const totalMonths = Math.floor(diff / (1000 * 60 * 60 * 24 * 30.44)); // 30.44 hari dalam 1 bulan rata-rata  
     const years = Math.floor(totalMonths / 12);
     const months = years * 12;
   
     setAge(`${years} Tahun ${months} Bulan`);
     setAgeInMonth(totalMonths);
   };
-
   const handleDateChange = (event: any, selectedDate?: Date) => {
     if (selectedDate) {
       const type = showPicker.type;
@@ -81,7 +76,6 @@ const GiziAnakSekolah = () => {
     }
     calculateAge(); // Recalculate age after date selection
   };
-
   const formattedDate = (date: Date) =>
     `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`;
 
@@ -149,8 +143,7 @@ const GiziAnakSekolah = () => {
       } else {
         kategori = "Usia tidak termasuk dalam kategori tidak kritis";
       }
-    }
-  
+    }  
     setKategoriKritis(kategori);
   };
   
@@ -234,6 +227,48 @@ const GiziAnakSekolah = () => {
     setProteinGram(proteinGram);
     setProteinKkal(proteinKkal);
   }, [metode, dataInput, weight, TEE]);
+
+  const hitungLemak = (persenLemak, TEE) => {
+    let lemakGram = 0;
+    let lemakKkal = 0;
+  
+    if (!isNaN(persenLemak)) {
+      lemakKkal = TEE * (persenLemak / 100);
+      lemakGram = lemakKkal / 9;
+    }
+  
+    return {lemakKkal, lemakGram};
+  }
+
+  useEffect(() => {
+    const { lemakGram, lemakKkal } = hitungLemak(persenLemak, TEE);
+    setLemakGram(lemakGram);
+    setLemakKkal(lemakKkal);
+  }, [persenLemak, TEE]);
+
+  const hitungKarbohidrat = (metodeKarbo, TEE, proteinKkal, lemakKkal, persenKarbo) => {
+    let karboKkal = 0;
+    let karboGram = 0;
+  
+    if (metodeKarbo === "sisa") {
+      karboKkal = TEE - (proteinKkal + lemakKkal);
+      karboGram = karboKkal / 4;
+    } else if (metodeKarbo === "persentase") {
+      if (!isNaN(persenKarbo)) {
+        karboKkal = (persenKarbo / 100) * TEE;
+        karboGram = karboKkal / 4;
+      }
+    }
+  
+    console.log(`${persenKarbo} Karbo (g): ${karboGram}, Karbo (kkal): ${karboKkal}`);
+    return { karboGram, karboKkal };
+  };
+  
+  useEffect(() => {
+    const { karboGram, karboKkal } = hitungKarbohidrat(metodeKarbo, TEE, proteinKkal, lemakKkal, persenKarbo);
+    setKarboGram(karboGram);
+    setKarboKkal(karboKkal);
+  }, [metodeKarbo, TEE, proteinKkal, lemakKkal, persenKarbo]);
   
   return (
     <Box flex={1} justifyContent="space-between">
@@ -256,7 +291,7 @@ const GiziAnakSekolah = () => {
         backgroundColor="white"
         contentContainerStyle={{ flexGrow: 1, padding: 16 }}
       >
-        <HStack alignSelf="center">
+        {/* <HStack alignSelf="center">
           <Button
             width={"$50%"}
             h={"$12"}
@@ -281,7 +316,7 @@ const GiziAnakSekolah = () => {
           >
             <Text color={selectedForm === "asupan" ? "white" : "black"} fontWeight={"$bold"}>Kebutuhan Asupan</Text>
           </Button>
-        </HStack>
+        </HStack> */}
         {selectedForm === "kalkulator" ? (
         <Box>
           {/* Nama Pengukuran */}
@@ -381,25 +416,19 @@ const GiziAnakSekolah = () => {
               {errors.height ? <Text color="red" fontSize="$sm">{errors.height}</Text> : null}
             </Box>
           </HStack>
-          {/* <HStack justifyContent="space-between">
-            <Box marginBottom={"$20"} my={"$4"} width="$full">
-              <Text fontSize={"$md"} fontWeight={"$semibold"} marginBottom={"$2"} color="gray.600">
-                Indeks Massa Tubuh (IMT) 
-              </Text>
-              <Input width="100%" padding={"$2"} backgroundColor="gray.100" isDisabled={true}>
-                <InputField p={"$5"} multiline={true} value={imt !== null ? imt.toFixed(2) : "0"}  />
-              </Input>
-            </Box>
-          </HStack> */}
+          
           <Box mb="$4" mb={"$20"}>
             <Pressable onPress={() => setIsOpen(!isOpen)}>
-              <Box bg="#23b160" w="$full" h="$12" justifyContent="center" >
-                <Text color="white" fontWeight="$bold" ml="$4">{isOpen ? "Kebutuhan Energi" : "Kebutuhan Energi"} (Opsional)</Text>
+              <Box bg="#23b160" w="$full" h="$12"  justifyContent="space-between" flexDirection="row" borderRadius={5} >
+                <Text color="white" fontWeight="$bold" my="$3" ml="$4">{isOpen ? "Kebutuhan Energi" : "Kebutuhan Energi"} (Opsional)</Text>
+                <Box my="$3" mr="$4">
+                  <Ionicons name="chevron-down" size={24} color="white" />
+                </Box>
               </Box>
             </Pressable>
             {/* Form (tampil hanya jika isOpen true) */}
             {isOpen && (
-              <Box > 
+              <Box bg="white" softShadow={"4"}> 
                 <Box ml="$4" minWidth="$8" borderRadius="$sm" alignSelf="flex-start" px="$4" h="$8" mt="$4" justifyContent="center" bg="#F98D3A"><Text color="white" fontWeight="$bold" fontSize="$sm">Kebutuhan Energi</Text></Box>
                 <Box mx="$4">
                 <Box marginBottom={"$4"} my={"$4"}>
@@ -452,11 +481,11 @@ const GiziAnakSekolah = () => {
                           </Input>
                         </Box>
                       </HStack>
-                    </Box>
-                    
+                    </Box>              
                   )}
                 </Box>
 
+                {/* Kebutuhan Protein */}
                 <Box ml="$4" minWidth="$8" borderRadius="$sm" alignSelf="flex-start" px="$4" h="$8" justifyContent="center" bg="#F98D3A">
                   <Text color="white" fontSize="$sm" fontWeight="$bold">Kebutuhan Protein</Text>
                 </Box>
@@ -487,16 +516,19 @@ const GiziAnakSekolah = () => {
                       <Text fontSize={"$md"} fontWeight={"$semibold"} marginBottom={"$2"} color="gray.600">
                         {metode === "gram protein" ? "Gram Protein" : "Persentase Protein"}
                       </Text>
-                      <Input padding="$2" width="100%" backgroundColor="gray.100">
-                        <InputField
-                          keyboardType="numeric"
-                          placeholder="Enter Text here"
-                          onChangeText={(text) => {
-                            const value = parseFloat(text);
-                            setDataInput(isNaN(value) ? 0 : value); // Set to 0 if NaN
-                          }}
-                        />
-                      </Input>
+                      <Box flexDirection="row">
+                        <Input padding="$2" width="85%" backgroundColor="gray.100">
+                          <InputField
+                            keyboardType="numeric"
+                            placeholder="Enter Text here"
+                            onChangeText={(text) => {
+                              const value = parseFloat(text);
+                              setDataInput(isNaN(value) ? 0 : value); // Set to 0 if NaN
+                            }}
+                          />
+                        </Input>
+                        <Text my={"$2"} ml={"$2"} fontSize={"$md"} fontWeight={"$semibold"} marginBottom={"$2"} color="gray.600">{metode === "gram protein" ? "gram" : "%"}</Text>
+                      </Box>
                       <HStack justifyContent="space-between" mb={"$4"}>
                         <Box marginBottom={4} my={"$4"} width="50%" ml={"-$0.5"} mr={"$1"}>
                           <Text fontSize={"$md"} fontWeight={"$semibold"} marginBottom={"$2"} color="gray.600">
@@ -515,6 +547,124 @@ const GiziAnakSekolah = () => {
                           <Input isDisabled={true} width="100%" padding={"$2"} backgroundColor="gray.100">
                             <Text fontSize="$md" fontWeight="$bold" color="red.600">
                               {proteinKkal}
+                            </Text>
+                          </Input>
+                        </Box>
+                      </HStack>
+                    </Box>
+                  )}
+                </Box>
+                
+                {/* Kebutuhan Lemak */}
+                <Box ml="$4" minWidth="$8" borderRadius="$sm" alignSelf="flex-start" px="$4" h="$8" justifyContent="center" bg="#F98D3A">
+                  <Text color="white" fontSize="$sm" fontWeight="$bold">Kebutuhan Lemak</Text>
+                </Box>
+                <Box mx="$4" my={"$4"}>               
+                  {kategoriKritis && (
+                    <Box mb={"$4"}>
+                      <Text fontSize={"$md"} fontWeight={"$semibold"} marginBottom={"$2"} color="gray.600">
+                        Persentase Lemak
+                      </Text>
+                      <Box flexDirection="row">
+                        <Input padding="$2" width="85%" backgroundColor="gray.100">
+                          <InputField
+                            keyboardType="numeric"
+                            placeholder="Enter Text here"
+                            onChangeText={(text) => {
+                              const value = parseFloat(text);
+                              setPersenLemak(isNaN(value) ? 0 : value); // Set to 0 if NaN
+                            }}
+                          />
+                        </Input>
+                        <Text my={"$2"} ml={"$2"} fontSize={"$md"} fontWeight={"$semibold"} marginBottom={"$2"} color="gray.600">%</Text>
+                      </Box>
+                      <HStack justifyContent="space-between" mb={"$4"}>
+                        <Box marginBottom={4} my={"$4"} width="50%" ml={"-$0.5"} mr={"$1"}>
+                          <Text fontSize={"$md"} fontWeight={"$semibold"} marginBottom={"$2"} color="gray.600">
+                            lemak (g)
+                          </Text>
+                          <Input isDisabled={true} padding={"$2"} width="100%" backgroundColor="gray.100">
+                            <Text fontSize="$md" fontWeight="$bold" color="red.600">
+                              {lemakGram}
+                            </Text>
+                          </Input>
+                        </Box>
+                        <Box marginBottom={4} my={"$4"} width="50%">
+                          <Text fontSize={"$md"} fontWeight={"$semibold"} marginBottom={"$2"} color="gray.600">
+                            Lemak (kkal)
+                          </Text>
+                          <Input isDisabled={true} width="100%" padding={"$2"} backgroundColor="gray.100">
+                            <Text fontSize="$md" fontWeight="$bold" color="red.600">
+                              {lemakKkal}
+                            </Text>
+                          </Input>
+                        </Box>
+                      </HStack>
+                    </Box>
+                  )}
+                </Box>
+
+                {/* Kebutuhan Karbohidrat */}
+                <Box ml="$4" minWidth="$8" borderRadius="$sm" alignSelf="flex-start" px="$4" h="$8" justifyContent="center" bg="#F98D3A">
+  <Text color="white" fontSize="$sm" fontWeight="$bold">Kebutuhan Karbohidrat</Text>
+                </Box>
+                <Box mx="$4">
+                  <Box marginBottom={"$4"} my={"$4"}>
+                    <Text fontSize={"$md"} fontWeight={"$semibold"} marginBottom={"$2"} color="gray.600">
+                      Metode Karbohidrat
+                    </Text>
+                    <RadioGroup value={metodeKarbo} onChange={setMetodeKarbo}>
+                      <VStack space="2xl">
+                        <Radio value="sisa">
+                          <RadioIndicator mr="$2">
+                            <RadioIcon as={CircleIcon} color="#23b160" />
+                          </RadioIndicator>
+                          <RadioLabel>Sisa dari Kebutuhan Lemak dan Protein</RadioLabel>
+                        </Radio>
+                        <Radio value="persentase">
+                          <RadioIndicator mr="$2">
+                            <RadioIcon as={CircleIcon} color="#23b160" />
+                          </RadioIndicator>
+                          <RadioLabel>Persentase TEE</RadioLabel>
+                        </Radio>
+                      </VStack>
+                    </RadioGroup>
+                  </Box>
+                  {kategoriKritis && (
+                    <Box mb={"$4"}>
+                      <Text fontSize={"$md"} fontWeight={"$semibold"} marginBottom={"$2"} color="gray.600">
+                        {metodeKarbo === "sisa" ? "Sisa dari Kebutuhan Lemak dan Protein" : "Persentase TEE"}
+                      </Text>
+                      {metodeKarbo === "persentase" && (
+                        <Input padding="$2" width="100%" backgroundColor="gray.100">
+                          <InputField
+                            keyboardType="numeric"
+                            placeholder="Enter Percentage here"
+                            onChangeText={(text) => {
+                              const value = parseFloat(text);
+                              setPersenKarbo(isNaN(value) ? 0 : value); // Set to 0 if NaN
+                            }}
+                          />
+                        </Input>
+                      )}
+                      <HStack justifyContent="space-between" mb={"$4"}>
+                        <Box marginBottom={4} my={"$4"} width="50%" ml={"-$0.5"} mr={"$1"}>
+                          <Text fontSize={"$md"} fontWeight={"$semibold"} marginBottom={"$2"} color="gray.600">
+                            Karbohidrat (g)
+                          </Text>
+                          <Input isDisabled={true} padding={"$2"} width="100%" backgroundColor="gray.100">
+                            <Text fontSize="$md" fontWeight="$bold" color="red.600">
+                              {karboGram}
+                            </Text>
+                          </Input>
+                        </Box>
+                        <Box marginBottom={4} my={"$4"} width="50%">
+                          <Text fontSize={"$md"} fontWeight={"$semibold"} marginBottom={"$2"} color="gray.600">
+                            Karbohidrat (kkal)
+                          </Text>
+                          <Input isDisabled={true} width="100%" padding={"$2"} backgroundColor="gray.100">
+                            <Text fontSize="$md" fontWeight="$bold" color="red.600">
+                              {karboKkal}
                             </Text>
                           </Input>
                         </Box>
