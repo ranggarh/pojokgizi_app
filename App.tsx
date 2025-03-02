@@ -14,10 +14,10 @@ import FormKalkulator from "./components/formKalkulator";
 import Bmi from "./screens/bmi";
 import GiziBalita from "./screens/kalkulator/giziBalita";
 import GiziAnakSekolah from "./screens/kalkulator/giziAnakSekolah";
-import GiziDewasa from "./screens/kalkulator/giziDewasa";
 import HasilPengukuran from "./screens/resultCalculator";
 import ZScoreCalculator from "./components/rumus/zscoreCalculatorBalita";
 import ZScoreCalculatorAnak from "./components/rumus/zscoreCalculatorAnakRemaja";
+import DewasaMaternal from "./screens/kalkulator/dewasaMaternal";
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -83,10 +83,10 @@ function App() {
           <Stack.Screen name="Data Pengukuran" component={DetailPengukuran}/>
           <Stack.Screen name="Gizi Balita" component={GiziBalita}/>
           <Stack.Screen name="Gizi Anak Sekolah" component={GiziAnakSekolah}/>
-          <Stack.Screen name="Gizi Dewasa" component={GiziDewasa}/>
           <Stack.Screen name="Hasil Perhitungan Balita" component={ZScoreCalculator}/>
           <Stack.Screen name="Hasil Perhitungan Anak Remaja" component={ZScoreCalculatorAnak}/>
           <Stack.Screen name="Cek BMI Ideal" component={Bmi}/>
+          <Stack.Screen name="Dewasa Maternal" component={DewasaMaternal} />
       </Stack.Navigator>
       </NavigationContainer>
       </SafeAreaView>

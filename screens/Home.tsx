@@ -11,7 +11,7 @@ import { Actionsheet, ActionsheetItem, ActionsheetContent, ActionsheetItemText, 
 import GrowthChart from "../components/grafik";
 
 const features = [
-    { id: "1", name: "Dewasa & Maternal", icon: require("../assets/bmi.png") },
+    { id: "1", name: "Dewasa Maternal", icon: require("../assets/bmi.png") },
     { id: "2", name: "Dewasa Kritis", icon: require("../assets/tryouticon.png") },
     { id: "3", name: "Penyakit Ginjal", icon: require("../assets/calendar.png") },
     { id: "4", name: "Dewasa Luka Bakar", icon: require("../assets/search.png") },
