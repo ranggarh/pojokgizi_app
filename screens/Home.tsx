@@ -13,7 +13,7 @@ import GrowthChart from "../components/grafik";
 const features = [
     { id: "1", name: "Dewasa Maternal", icon: require("../assets/bmi.png") },
     { id: "2", name: "Dewasa Kritis", icon: require("../assets/tryouticon.png") },
-    { id: "3", name: "Penyakit Ginjal", icon: require("../assets/calendar.png") },
+    { id: "3", name: "Pasien DM", icon: require("../assets/calendar.png") },
     { id: "4", name: "Dewasa Luka Bakar", icon: require("../assets/search.png") },
     { id: "5", name: "Pasien DM", icon: require("../assets/search.png") },
     { id: "6", name: "Rumus Gizi", icon: require("../assets/search.png") },
@@ -145,7 +145,7 @@ const Home = () => {
                             <Box width={"$full"} h={"$full"}>
                                 <Text color={"white"} fontSize={"$md"} fontFamily={"inter-bold"}>Pantau Tumbuh Kembang Anak Secara Berkala</Text>
                                 <Text color={"white"} fontFamily="inter-regular" my={"$1"} mb={"$3"} fontSize={"$xs"}>Monitoring Status Gizi Bersama PojokGizi Indonesia</Text>
-                                <Button bg={"#efad4d"}>
+                                <Button bg={"#efad4d"} onPress={() => navigationTo("Tambah Anak")}>
                                     <Text fontFamily={"inter-bold"} color={"white"} fontWeight={"$semibold"} fontSize={"$md"}>Tambah Data</Text>
                                 </Button>
                             </Box>
@@ -166,43 +166,41 @@ const Home = () => {
                         
                     </HStack>
                 </Box> */}
-
-                <Box  bg={"#cbf5df"}>
+                {/* bg={"#cbf5df"} */}
+                <Box bg={"#cbf5df"} >
                     <Box flexDirection={"row"} mt={"$4"} mx={"$4"}>
                         <Box width={"$1"} h={22} bg={"#14b454"}></Box>
-                        <Text ml={"$2"} fontSize={"$sm"} color="$black" fontFamily={"inter-bold"} >Perhitungan Status Gizi</Text>
-                    </Box>                         
-                    <ScrollView mx={"$3"} mb={"$2"} mt={"$2"} ml={"$4"} horizontal showsHorizontalScrollIndicator={false}>
-                        <HStack flex={1} justifyContent="space-around" borderRadius={5} gap={"$2"}>
-                            {features &&
-                                features.map((item) => (
-                                    <Pressable key={item.id} onPress={() => navigation.navigate(item.name)}>
-                                        <Box bg="white" borderRadius={5} p={"$4"} alignItems="center" justifyContent="center" flex={1} width={80}>
-                                            <Box
-                                                width={50}
-                                                height={20}
-                                                bg="blue.100"
-                                                rounded="full"
-                                                alignItems="center"
-                                                justifyContent="center"
-                                                my={"$2"}
-                                                mb={"$4"}
-                                            >
-                                                <Image
-                                                    source={item.icon}
-                                                    style={{ width: 30, height: 30 }}
-                                                    alt={`Ikon fitur ${item.name}`}
-                                                />
-                                            </Box>
-                                            <Text fontSize="$2xs" flexWrap="wrap" maxWidth={85} textAlign="center" fontFamily="inter-semibold">
-                                                {item.name}
-                                            </Text>
+                        <Text ml={"$2"} fontSize={"$sm"} color="$black" fontFamily={"inter-bold"}>Perhitungan Status Gizi</Text>
+                    </Box>
+                    <VStack mx={"$3"} mb={"$2"} mt={"$2"} ml={"$4"} space={"md"}>
+                        <HStack  justifyContent="space-between" flexWrap="wrap">
+                            {features.map((item, index) => (
+                                <Pressable  key={item.id} onPress={() => navigation.navigate(item.name)} style={{ width: '30%' }} style={{ width: '30%', marginVertical: 5, marginHorizontal:5 }}>
+                                    <Box bg="white" borderRadius={4} p={"$4"} alignItems="center" justifyContent="center" flex={1}>
+                                        <Box
+                                            width={50}
+                                            height={20}
+                                            bg="blue.100"
+                                            rounded="full"
+                                            alignItems="center"
+                                            justifyContent="center"
+                                            my={"$2"}
+                                            mb={"$4"}
+                                        >
+                                            <Image
+                                                source={item.icon}
+                                                style={{ width: 30, height: 30 }}
+                                                alt={`Ikon fitur ${item.name}`}
+                                            />
                                         </Box>
-                                    </Pressable>
-                                ))}
+                                        <Text fontSize="$2xs" flexWrap="wrap" maxWidth={85} textAlign="center" fontFamily="inter-semibold">
+                                            {item.name}
+                                        </Text>
+                                    </Box>
+                                </Pressable>
+                            ))}
                         </HStack>
-                    </ScrollView>
-    
+                    </VStack>
                 </Box>
 
                 {/* Section 3 Fitur Fitur Lain */}
@@ -314,87 +312,169 @@ const Home = () => {
                 
 
                 {/* Section 4 Deteksi Dini Kesehatan Gizi*/}
-                <Box mx={12} my={"$5"} borderRadius={5}>
-                    <Box flexDirection={"row"} mb={"$1"}>
-                        <Box width={"$1"} h={24} bg={"#23b160"}></Box>
-                        <Text mb={"$3"} ml={"$2"} fontSize={"$md"} fontFamily={"inter-bold"}>Deteksi Dini Kesehatan Gizi</Text>
-                    </Box>                    
-                    <Box width={"$full"} gap={"$2"} borderRadius={5} h={200} p={"$4"} bg={"#23b160"} flexDirection={"row"}>
-                        <Box width={"$2/3"} mx borderRadius={5} h={"$full"} bg={"#23b160"} mr={"$2"}>
-                            <Box width={"$full"}  h={"$full"}>
-                                <Text color={"white"} fontSize={"$sm"} fontFamily={"inter-bold"}>Saat Ini Anda Mengalami Masalah Kesehatan Gizi?</Text>
-                                <Pressable  onPress={() => navigation.navigate("Gizi Balita")} p={"$1"} mt={"$2"} ml={"-$1"} h={"$16"} >
-                                    <Box  bg="white" flexDirection="row" alignItems="center" px={"$4"} borderRadius={5} h={"$full"} w={"$full"}>
-                                        <Image source={require("../assets/tryouticon.png")} alt="iconbmi" style={{ width: 30, height: 30 }} />
-                                        <Text mx={"$2"} fontFamily={"inter-bold"} color={"black"} fontWeight={"$semibold"} fontSize={"$xs"}>Gizi Balita</Text>
-                                    </Box>
-                                </Pressable>
-                                <Pressable  onPress={() => navigation.navigate("Gizi Anak Sekolah")} p={"$1"} h={"$16"} ml={"-$1"}>
-                                    <Box  bg="white" flexDirection="row" alignItems="center" px={"$4"} borderRadius={5} h={"$full"} w={"$full"}>
-                                        <Image source={require("../assets/tryouticon.png")} alt="iconbmi" style={{ width: 30, height: 30 }} />
-                                        <Text mx={"$2"} fontFamily={"inter-bold"} color={"black"} fontWeight={"$semibold"} fontSize={"$xs"}>Gizi Anak Sekolah</Text>
-                                    </Box>
-                                </Pressable>
+                <Box bg="white" borderTopLeftRadius={20} borderTopRightRadius={20}>
+                    <Box mx={12} my={"$5"} borderRadius={5}>
+                        <Box flexDirection={"row"} mb={"$1"}>
+                            <Box width={"$1"} h={24} bg={"#23b160"}></Box>
+                            <Text mb={"$3"} ml={"$2"} fontSize={"$md"} fontFamily={"inter-bold"}>Deteksi Dini Kesehatan Gizi</Text>
+                        </Box>                    
+                        <Box width={"$full"} gap={"$2"} borderRadius={5} h={200} p={"$4"} bg={"#23b160"} flexDirection={"row"}>
+                            <Box width={"$2/3"} mx borderRadius={5} h={"$full"} bg={"#23b160"} mr={"$2"}>
+                                <Box width={"$full"}  h={"$full"}>
+                                    <Text color={"white"} fontSize={"$sm"} fontFamily={"inter-bold"}>Saat Ini Anda Mengalami Masalah Kesehatan Gizi?</Text>
+                                    <Pressable  onPress={() => navigation.navigate("Gizi Balita")} p={"$1"} mt={"$2"} ml={"-$1"} h={"$16"} >
+                                        <Box  bg="white" flexDirection="row" alignItems="center" px={"$4"} borderRadius={5} h={"$full"} w={"$full"}>
+                                            <Image source={require("../assets/tryouticon.png")} alt="iconbmi" style={{ width: 30, height: 30 }} />
+                                            <Text mx={"$2"} fontFamily={"inter-bold"} color={"black"} fontWeight={"$semibold"} fontSize={"$xs"}>Gizi Balita</Text>
+                                        </Box>
+                                    </Pressable>
+                                    <Pressable  onPress={() => navigation.navigate("Gizi Anak Sekolah")} p={"$1"} h={"$16"} ml={"-$1"}>
+                                        <Box  bg="white" flexDirection="row" alignItems="center" px={"$4"} borderRadius={5} h={"$full"} w={"$full"}>
+                                            <Image source={require("../assets/tryouticon.png")} alt="iconbmi" style={{ width: 30, height: 30 }} />
+                                            <Text mx={"$2"} fontFamily={"inter-bold"} color={"black"} fontWeight={"$semibold"} fontSize={"$xs"}>Gizi Anak Sekolah</Text>
+                                        </Box>
+                                    </Pressable>
+                                </Box>
+                            </Box>
+                            <Box width={"$1/3"} borderRadius={5} h={"$full"} bg={"#23b160"}>
+                                <Image source={require("../assets/insurance.png")} alt="Deteksi Dini Kesehatan Gizi" width={180} my={"-$3"} mx={"-$3"} style={{ height: 160 }} />
                             </Box>
                         </Box>
-                        <Box width={"$1/3"} borderRadius={5} h={"$full"} bg={"#23b160"}>
-                            <Image source={require("../assets/insurance.png")} alt="Deteksi Dini Kesehatan Gizi" width={180} my={"-$3"} mx={"-$3"} style={{ height: 160 }} />
-                        </Box>
                     </Box>
-                </Box>
 
-                {/* Section 5 Kumpulan Artikel */}
-                <Box mx={12} mt={"$5"} mb={"$10"}>
-                    <Box flexDirection={"row"} mb={"$1"}>
-                        <Box width={"$1"} h={24} bg={"#23b160"}></Box>
-                        <Text mb={"$3"} ml={"$2"} fontSize={"$md"} fontFamily="inter-bold">Artikel Terbaru</Text>
-                    </Box>  
-                    <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-                        <HStack gap={"$2"}>
-                            {articles.map((article) => (
-                                <Box
-                                    key={article.id}
-                                    borderRadius="$lg"
-                                    overflow="hidden"
-                                    bg="white"
-                                    width={"$64"}
-                                    height={"$48"}
+                    {/* Section 5 Kumpulan Artikel */}
+                    <Box mx={12} mt={"$5"} mb={"$10"}>
+                        <Box flexDirection={"row"} mb={"$1"}>
+                            <Box width={"$1"} h={24} bg={"#23b160"}></Box>
+                            <Text mb={"$3"} ml={"$2"} fontSize={"$md"} fontFamily="inter-bold">Artikel Terbaru</Text>
+                        </Box>  
+
+                        <Box mb="$4">
+                        <ScrollView 
+                            horizontal 
+                            showsHorizontalScrollIndicator={false}
+                            contentContainerStyle={{ paddingRight: 20 }}
+                        >
+                            {["Semua", "Tryout", "Gizi", "Stunting", "Kesehatan", "Nutrisi", "MPASI", "Balita"].map((category, index) => (
+                                <Pressable 
+                                    key={category}
+                                    onPress={() => console.log(`Filter by ${category}`)}
                                 >
-                                    <Image
-                                        source={article.image}
-                                        alt="Artikel Image"
-                                        style={{
-                                            height: 200,
-                                            width: "100%",
-                                        }}
-                                        resizeMode="cover"
-                                    />
-                                    <LinearGradient
-                                        colors={["rgba(0,128,0,0.8)", "rgba(0,128,0,0)"]}
-                                        start={{ x: 0, y: 0.5 }}
-                                        end={{ x: 0, y: 0 }}
-                                        style={{
-                                            position: "absolute",
-                                            bottom: 0,
-                                            left: 0,
-                                            right: 0,
-                                            height: 80,
-                                            zIndex: 1,
-                                        }}
+                                    <Box 
+                                        bg={index === 0 ? "#23b160" : "white"} 
+                                        px="$3" 
+                                        py="$2" 
+                                        borderRadius="$sm" 
+                                        mr="$2"
+                                        borderWidth={1}
+                                        borderColor="#23b160"
                                     >
-                                        <Box p="$4" my="-$8">
-                                            <Text color="white" p="$2" bg="#efad4d" alignSelf="flex-start" borderRadius="$md" fontSize="$xs" fontWeight="bold" mb="$2">
+                                        <Text 
+                                            color={index === 0 ? "white" : "#23b160"} 
+                                            fontSize="$sm" 
+                                            fontFamily="inter-medium"
+                                        >
+                                            {category}
+                                        </Text>
+                                    </Box>
+                                </Pressable>
+                            ))}
+                        </ScrollView>
+                    </Box>
+                        {articles.map((article) => (
+                            <Pressable key={article.id} onPress={() => navigation.navigate("ArticleDetail", { article })}>
+                                <Box 
+                                    flexDirection="row" 
+                                    bg="white" 
+                                    borderRadius="$md" 
+                                    mb="$3"
+                                    softShadow="2"
+                                    overflow="hidden"
+                                    h={120}
+                                    position="relative"
+                                >
+                                    {/* Colored strip on the left */}
+                                    <Box 
+                                        position="absolute" 
+                                        left={0} 
+                                        top={0} 
+                                        bottom={0} 
+                                        width={"$2"} 
+                                        bg={article.id === "1" ? "#23b160" : 
+                                            article.id === "2" ? "#efad4d" : 
+                                            article.id === "3" ? "#3D8D7A" : 
+                                            "#4a90e2"}
+                                    />
+                                    
+                                    {/* Left side - Image with margin from the colored strip */}
+                                    
+                                    
+                                    {/* Right side - Content */}
+                                    <Box w="$2/3" px="$6" justifyContent="space-between">
+                                        <VStack space="$1">
+                                            <Text 
+                                                mt={"$2"}
+                                                color={article.id === "1" ? "#23b160" : 
+                                                    article.id === "2" ? "#efad4d" : 
+                                                    article.id === "3" ? "#3D8D7A" : 
+                                                    "#4a90e2"} 
+                                                fontSize="$xs" 
+                                                fontFamily="inter-bold"
+                                            >
                                                 {article.category}
                                             </Text>
-                                            <Text color="white" fontSize="$md" fontWeight="bold">
+                                            <Text 
+                                                fontSize="$sm" 
+                                                fontFamily="inter-semibold" 
+                                                numberOfLines={2}
+                                            >
                                                 {article.title}
                                             </Text>
-                                        </Box>
-                                    </LinearGradient>
+                                        </VStack>
+                                        
+                                        <HStack alignItems="center" justifyContent="space-between">
+                                            <Button 
+                                                size="xs" 
+                                                bottom="$3"
+                                                variant="outline" 
+                                                borderColor={article.id === "1" ? "#23b160" : 
+                                                    article.id === "2" ? "#efad4d" : 
+                                                    article.id === "3" ? "#3D8D7A" : 
+                                                    "#4a90e2"}
+                                            >
+                                                <Text 
+                                                    color={article.id === "1" ? "#23b160" : 
+                                                        article.id === "2" ? "#efad4d" : 
+                                                        article.id === "3" ? "#3D8D7A" : 
+                                                        "#4a90e2"} 
+                                                    fontSize="$2xs" 
+                                                    fontFamily="inter-medium"
+                                                >
+                                                    Baca Artikel
+                                                </Text>
+                                            </Button>
+                                            
+                                            <HStack alignItems="center" space="$1" bottom="$3">
+                                                <Ionicons name="time-outline" size={12} color="#999" />
+                                                <Text fontSize="$2xs" color="#999" fontFamily="inter-regular">5 menit</Text>
+                                            </HStack>
+                                        </HStack>
+                                    </Box>
+                                    <Box w="$1/3">
+                                        <Image 
+                                            source={article.image} 
+                                            alt={article.title}
+                                            w="$full"
+                                            h="$full"
+                                            resizeMode="cover"
+                                            borderRadius="$sm"
+                                            
+                                        />
+                                    </Box>
                                 </Box>
-                            ))}
-                        </HStack>
-                    </ScrollView>
+                            </Pressable>
+                        ))}             
+                    </Box>
                 </Box>
             </ScrollView>
         </Box>

@@ -10,14 +10,18 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import AntroCalc from "./screens/calculator";
 import FormPengukuran from "./components/formPengukuran";
 import DetailPengukuran from "./screens/detailPengukuran";
-import FormKalkulator from "./components/formKalkulator";
 import Bmi from "./screens/bmi";
 import GiziBalita from "./screens/kalkulator/giziBalita";
 import GiziAnakSekolah from "./screens/kalkulator/giziAnakSekolah";
-import HasilPengukuran from "./screens/resultCalculator";
 import ZScoreCalculator from "./components/rumus/zscoreCalculatorBalita";
 import ZScoreCalculatorAnak from "./components/rumus/zscoreCalculatorAnakRemaja";
 import DewasaMaternal from "./screens/kalkulator/dewasaMaternal";
+import { StatusBar } from "react-native";
+import DewasaKritis from "./screens/kalkulator/dewasaKritis";
+import PasienDM from "./screens/kalkulator/pasienDM";
+import TambahAnak from "./screens/monitoring/tambahAnak";
+import HasilMonitoring from "./screens/monitoring/hasilMonitoring";
+
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -46,17 +50,25 @@ const Tabs = () => {
         <Ionicons
           name={iconName}
           size={30}
-          color={focused ? "#23b160" : "#d3d3d3"}
+          color={focused ? "white" : "#d3d3d3"}
         />
       );
     },
     tabBarIconStyle: { marginTop: 5 },
     tabBarStyle: {
-      backgroundColor: 'white',
+      backgroundColor: '#23b160',
       height: 60,
       borderTopWidth: 0,
       borderTopRightRadius: 10,
       borderTopLeftRadius: 10,
+      shadowColor: '#fff', // Warna bayangan
+          shadowOffset: {
+            width: 0,
+            height: 2, // Mengatur tinggi bayangan
+          },
+          shadowOpacity: 0.3, // Opasitas bayangan
+          shadowRadius: 4, // Radius bayangan
+          elevation: 5, 
     },
     tabBarShowLabel: false,
   })}
@@ -75,6 +87,7 @@ function App() {
   return (
     <GluestackUIProvider config={config}>
       <SafeAreaView style={{ flex: 1 }}>
+      <StatusBar barStyle="light-content" backgroundColor="#23b160" /> {/* Menambahkan StatusBar */}
       <NavigationContainer>
       <Stack.Navigator>    
           <Stack.Screen name="Tabs" component={Tabs} options={noHead}/>
@@ -87,6 +100,10 @@ function App() {
           <Stack.Screen name="Hasil Perhitungan Anak Remaja" component={ZScoreCalculatorAnak}/>
           <Stack.Screen name="Cek BMI Ideal" component={Bmi}/>
           <Stack.Screen name="Dewasa Maternal" component={DewasaMaternal} />
+          <Stack.Screen name="Dewasa Kritis" component={DewasaKritis} />
+          <Stack.Screen name="Pasien DM" component={PasienDM} />
+          <Stack.Screen name="Tambah Anak" component={TambahAnak} />
+          <Stack.Screen name="Hasil Monitoring" component={HasilMonitoring} />          
       </Stack.Navigator>
       </NavigationContainer>
       </SafeAreaView>

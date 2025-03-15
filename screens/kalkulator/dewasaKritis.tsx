@@ -5,11 +5,10 @@ import { useNavigation } from "@react-navigation/native";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import InfoPopover from "../../components/infoBuble";
 
 
 type RootStackParamList = {
-  "Hasil Perhitungan Anak Remaja": {
+  "Hasil Perhitungan Dewasa Kritis": {
     name: string;
     gender: string;
     weight: number;
@@ -19,7 +18,7 @@ type RootStackParamList = {
   };
 };
 
-const DewasaMaternal = () => {
+const DewasaKritis = () => {
     const [name, setName] = useState('');
     const [gender, setGender] = useState('');
     const [measurementDate, setMeasurementDate] = useState(new Date());
@@ -30,10 +29,8 @@ const DewasaMaternal = () => {
     const [lila, setLila] = useState<number>(0);
     const [tinggiLutut, setTinggiLutut] = useState<number>(0);
     const [panjangUlna, setPanjangUlna] = useState<number>(0);
-    const [oedema, setOedema] = useState(0);
-    const [asites, setAsites] = useState(0);
-    const [faktorAktivitas, setFaktorAktivitas] = useState<number>(0);
-    const [faktorStress, setFaktorStress] = useState<number>(0);
+    const [oedema, setOedema] = useState("0");
+    const [asites, setAsites] = useState("0");
     const [age, setAge] = useState<number>(0);
     const [isOpen, setIsOpen] = useState(false);
     const [errors, setErrors] = useState<{ name: string; gender: string; weight: string; height: string; birthDate: string; measurementDate: string; }>({
@@ -50,7 +47,7 @@ const DewasaMaternal = () => {
     const [dataInput, setDataInput] = useState<number>(0);
     const [ageInMonth, setAgeInMonth] = useState<number>(0);
     const [statusKEK, setStatusKEK] = useState("");
-    const [ketHamil, setKetHamil] = useState<number>(0);
+    const [ketHamil, setKetHamil] = useState("0");
     const [TEE, setTEE] = useState<number>(0);
     const [metode, setMetode] = useState("");
     const [proteinGram, setProteinGram] = useState(0);
@@ -68,6 +65,7 @@ const DewasaMaternal = () => {
     const [bbAdj, setBbAdj] = useState(0); // Hasil BB Adj
     const [selectedRumus, setSelectedRumus] = useState(""); // RUMUS 1 atau 2 otomatis
     const [selectedBB, setSelectedBB] = useState(''); // State untuk menyimpan pilihan BB
+    const [jumlahEnergi, setJumlahEnergi] = useState(0);
 
 
     const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
@@ -139,7 +137,7 @@ const DewasaMaternal = () => {
         }
     
         if (valid) {
-          navigation.navigate("Hasil Perhitungan Anak Remaja", {name, gender, weight, height, age: (ageInMonth), ageInYears: age});
+          navigation.navigate("Hasil Perhitungan Dewasa Kritis", {name, gender, weight, height, age: (ageInMonth), ageInYears: age});
         }
       };
       
@@ -247,45 +245,17 @@ const DewasaMaternal = () => {
               : selectedBB === "2" ? bbAdj 
               : 0;
 
-        const calculateBMR = () => {
-          console.log("Calculating BMR with:", { bbFinal, height, age, gender, method });
         
-          if (method === "Harben") {
-            if (gender === "Laki Laki") {
-              const bmr = 66.42 + 13.75 * bbFinal + 5 * height - 6.8 * age;
-              console.log("Calculated BMR (Harben, Male):", bmr);
-              return bmr;
-            } else if (gender === "Perempuan") {
-              const bmr = 655.42 + 9.65 * bbFinal + 1.85 * height - 4.68 * age;
-              console.log("Calculated BMR (Harben, Female):", bmr);
-              return bmr;
-            }
-          } else if (method === "Miffin") {
-            if (gender === "Laki Laki") {
-              const bmr = 10 * bbFinal + 6.25 * height - 5 * age + 5;
-              console.log("Calculated BMR (Mifflin, Male):", bmr);
-              return bmr;
-            } else if (gender === "Perempuan") {
-              const bmr = 10 * bbFinal + 6.25 * height - 5 * age - 161;
-              console.log("Calculated BMR (Mifflin, Female):", bmr);
-              return bmr;
-            }
-          }
-        
-          console.log("Returning default BMR: 0");
-          return 0;
-        };
       
-        const calculateTEE = (BMR:number, faktorAktivitas:number, faktorStress:number) => {
+        const calculateTEE = (jumlahEnergi:number) => {
           console.log("Calculating TEE with:", {
-              BMR,
-              faktorAktivitas,
-              faktorStress,
+              jumlahEnergi,
+              bbFinal,
               gender,
               ketHamil,
           });
       
-          let TEE = BMR * faktorAktivitas * faktorStress;
+          let TEE = jumlahEnergi * bbFinal;
           
           if (gender === 'Perempuan') {
             TEE += nutrisiKehamilan[ketHamil].E;
@@ -297,11 +267,9 @@ const DewasaMaternal = () => {
       
       
         useEffect(() => {
-          console.log("Weight:", weight, "Height:", height, "Age:", age, "Gender:", gender, "Method:", method);
-          const newBMR = calculateBMR();
-          setBMR(newBMR);
-          setTEE(calculateTEE(newBMR, faktorAktivitas, faktorStress));
-        }, [weight, height, age, gender, method, faktorAktivitas, faktorStress, ketHamil]);
+          console.log("jumlahEnergi:", jumlahEnergi, "bbFinal:", bbFinal, "Gender:", gender);
+          setTEE(calculateTEE(jumlahEnergi));
+        }, [jumlahEnergi, gender, bbFinal, ketHamil]);
 
         const getStatusKEK = (gender: string, lila: number) => {
           if (gender === "Laki-Laki") return "-";
@@ -471,14 +439,8 @@ const DewasaMaternal = () => {
                         <Text fontSize={"$md"} fontWeight={"$semibold"} marginBottom={"$2"} color="gray.600">
                             Berat Badan (kg)
                         </Text>
-                        {/* <InfoPopover 
-                          title="Add Employee" 
-                          message="The employee ID field should have a unique value. You will be able to create a user permission for the newly added employee." 
-                        /> */}
                         <Input borderColor="#F98D3A" padding={"$2"} width="100%" backgroundColor="gray.100">
-                            <InputField keyboardType="numeric" placeholder="Enter Text here" onChangeText={text => {
-                            setWeight(parseFloat(text) || 0);
-                            }} />
+                            <InputField keyboardType="numeric" placeholder="Enter Text here" onChangeText={text => setWeight(parseFloat(text) || 0)}/>
                         </Input>
                         {errors.weight ? <Text color="red" fontSize="$sm">{errors.weight}</Text> : null}
                         </Box>
@@ -487,9 +449,8 @@ const DewasaMaternal = () => {
                             Tinggi Badan (cm)
                         </Text>
                         <Input borderColor="#F98D3A" width="100%" padding={"$2"} backgroundColor="gray.100">
-                            <InputField keyboardType="numeric" placeholder="Enter Text here" onChangeText={text => {
-                            setHeight(parseFloat(text) || 0);
-                            }} />
+                            <InputField keyboardType="numeric" placeholder="Enter Text here" onChangeText={text => setHeight(parseFloat(text) || 0)} 
+                            />
                         </Input>
                         {errors.height ? <Text color="red" fontSize="$sm">{errors.height}</Text> : null}
                         </Box>
@@ -502,9 +463,7 @@ const DewasaMaternal = () => {
                             LiLA (cm)
                         </Text>
                         <Input borderColor="#F98D3A" padding={"$2"} width="100%" backgroundColor="gray.100">
-                            <InputField keyboardType="numeric" placeholder="Enter Text here" onChangeText={text => {
-                            setLila(parseFloat(text) || 0);
-                            }} />
+                            <InputField keyboardType="numeric" placeholder="Enter Text here"onChangeText={text => setLila(parseFloat(text) || 0)} />
                         </Input>
                         {errors.weight ? <Text color="red" fontSize="$sm">{errors.weight}</Text> : null}
                         </Box>
@@ -513,9 +472,7 @@ const DewasaMaternal = () => {
                             T. Lutut (cm)
                         </Text>
                         <Input borderColor="#F98D3A" padding={"$2"} width="100%" backgroundColor="gray.100">
-                            <InputField keyboardType="numeric" placeholder="Enter Text here" onChangeText={text => {
-                            setTinggiLutut(parseFloat(text) || 0);
-                            }} />
+                            <InputField keyboardType="numeric" placeholder="Enter Text here" onChangeText={text => setTinggiLutut(parseFloat(text) || 0)}/>
                         </Input>
                         {errors.weight ? <Text color="red" fontSize="$sm">{errors.weight}</Text> : null}
                         </Box>
@@ -524,103 +481,12 @@ const DewasaMaternal = () => {
                             P.Ulna (cm)
                         </Text>
                         <Input borderColor="#F98D3A" padding={"$2"} width="100%" backgroundColor="gray.100">
-                            <InputField keyboardType="numeric" placeholder="Enter Text here" onChangeText={text => {
-                            setPanjangUlna(parseFloat(text) || 0);
-                            }} />
+                            <InputField keyboardType="numeric" placeholder="Enter Text here" onChangeText={text => setPanjangUlna(parseFloat(text) || 0)}/>
                         </Input>
                         {errors.weight ? <Text color="red" fontSize="$sm">{errors.weight}</Text> : null}
                         </Box>
                       </HStack>
-                      
                     </VStack>
-                    {/* Oederma */}
-                    {/* <Box marginBottom={"$2"} my={"$2"}>
-                        <Text fontSize={"$md"} fontWeight={"$semibold"} marginBottom={"$2"} color="gray.600">
-                        Oederma
-                        </Text>                
-                        <Select>
-                          <SelectTrigger borderColor="#F98D3A" variant="underlined" size="md" >
-                            <SelectInput placeholder="Pilih Gejala Oederma" mx="$3"/>
-                            <SelectIcon mr="$3" >
-                              <Icon as={ChevronDownIcon} />
-                            </SelectIcon>
-                          </SelectTrigger>
-                          <SelectPortal>
-                            <SelectBackdrop/>
-                            <SelectContent>
-                              <SelectDragIndicatorWrapper>
-                                <SelectDragIndicator />
-                              </SelectDragIndicatorWrapper>
-                              <SelectItem label="Tidak Ada" value="0" />
-                              <SelectItem label="Kedua Pergelangan Kaki" value="1" />
-                              <SelectItem
-                                label="Kedua Kaki, Tangan, Lengan Bawah dan Tungkai Bawah"
-                                value="2"
-                              />
-                              <SelectItem
-                                label="Edema pitting bilateral menyeluruh, meliputi kedua tungkai, lengan, kaki, dan wajah"
-                                value="3"
-                              />
-                            </SelectContent>
-                          </SelectPortal>
-                        </Select>
-                    </Box> */}
-                    {/* Asites */}
-                    {/* <Box marginBottom={"$2"} my={"$4"}>
-                        <Text fontSize={"$md"} fontWeight={"$semibold"} marginBottom={"$2"} color="gray.600">
-                        Asites
-                        </Text>                
-                        <Select>
-                          <SelectTrigger borderColor="#F98D3A" variant="underlined" size="md" >
-                            <SelectInput placeholder="Pilih Gejala Asites" mx="$3"/>
-                            <SelectIcon mr="$3">
-                              <Icon as={ChevronDownIcon} />
-                            </SelectIcon>
-                          </SelectTrigger>
-                          <SelectPortal>
-                            <SelectBackdrop/>
-                            <SelectContent>
-                              <SelectDragIndicatorWrapper>
-                                <SelectDragIndicator />
-                              </SelectDragIndicatorWrapper>
-                              <SelectItem label="Tidak Ada" value="0" />
-                              <SelectItem label="Asites hanya dapat dideteksi dengan pemeriksaan USG" value="1" />
-                              <SelectItem
-                                label="Asites menyebabkan distensi perut simetris sedang"
-                                value="2"
-                              />
-                              <SelectItem
-                                label="Asites menyebabkan distensi perut yang nyata"
-                                value="3"
-                              />
-                            </SelectContent>
-                          </SelectPortal>
-                        </Select>
-                    </Box> */}
-                    <HStack justifyContent="space-between" mb={"$2"}>
-                        <Box marginBottom={4} my={"$4"} width="50%" ml={"-$0.5"} mr={"$1"}>
-                        <Text fontSize={"$md"} fontWeight={"$semibold"} marginBottom={"$2"} color="gray.600">
-                            Faktor Aktivitas
-                        </Text>
-                        <Input borderColor="#F98D3A" padding={"$2"} width="100%" backgroundColor="gray.100">
-                            <InputField keyboardType="numeric" placeholder="Enter Text here" onChangeText={text => {
-                            setFaktorAktivitas(parseFloat(text) || 0);
-                            }} />
-                        </Input>
-                        {errors.weight ? <Text color="red" fontSize="$sm">{errors.weight}</Text> : null}
-                        </Box>
-                        <Box marginBottom={4} my={"$4"} width="50%">
-                        <Text fontSize={"$md"} fontWeight={"$semibold"} marginBottom={"$2"} color="gray.600">
-                            Faktor Stress
-                        </Text>
-                        <Input borderColor="#F98D3A" width="100%" padding={"$2"} backgroundColor="gray.100">
-                            <InputField keyboardType="numeric" placeholder="Enter Text here" onChangeText={text => {
-                            setFaktorStress(parseFloat(text) || 0);
-                            }} />
-                        </Input>
-                        {errors.height ? <Text color="red" fontSize="$sm">{errors.height}</Text> : null}
-                        </Box>
-                    </HStack>
                     <Box width={"100%"} my={"$1.5"}>
                         <Text fontSize={"$sm"} fontWeight={"$semibold"} marginBottom={"$2"} color="gray.600">
                           Oedema
@@ -823,7 +689,7 @@ const DewasaMaternal = () => {
                         </Text>
                         <Input variant="outline" isDisabled={true} borderColor="#F98D3A" width="100%" padding={"$2"} backgroundColor="gray.100">
                             <InputField value={
-                              selectedBB === "0" ? weight : 
+                              selectedBB === "0" ? weight.toString() : 
                               selectedBB === "1" ? bbi.toFixed(2) : 
                               selectedBB === "2" ? bbAdj :
                               selectedBB === "3" ? bbKoreksi.toFixed(2) : 
@@ -848,38 +714,22 @@ const DewasaMaternal = () => {
                             <Box mx="$4">
                             <Box marginBottom={"$4"} my={"$4"}>
                             <Text fontSize={"$md"} fontWeight={"$semibold"} marginBottom={"$2"} color="gray.600">
-                                Metode
+                                Jumlah Energi
                             </Text>
-                            <RadioGroup value={method} onChange={setMethod}>
-                                <HStack space="2xl">
-                                <Radio value="Harben">
-                                    <RadioIndicator mr="$2">
-                                    <RadioIcon as={CircleIcon} color="#23b160" />
-                                    </RadioIndicator>
-                                    <RadioLabel>Harben</RadioLabel>
-                                </Radio>
-                                <Radio value="Miffin">
-                                    <RadioIndicator mr="$2">
-                                    <RadioIcon as={CircleIcon} color="#23b160" />
-                                    </RadioIndicator>
-                                    <RadioLabel>Miffin</RadioLabel>
-                                </Radio>
-                                </HStack>
-                            </RadioGroup>
+                                <Input borderColor="#F98D3A" padding="$2" width="100%" backgroundColor="gray.100">
+                                    <InputField
+                                        keyboardType="numeric"
+                                        placeholder="Enter Text here"
+                                        onChangeText={(text) => {
+                                        const value = parseFloat(text);
+                                        setJumlahEnergi(isNaN(value) ? 0 : value); // Set to 0 if NaN
+                                        }}
+                                    />
+                                </Input>
                             </Box>
                                 <Box>
                                 <HStack justifyContent="space-between" mb={"$4"}>
-                                    <Box marginBottom={4} my={"$4"} width="50%" ml={"-$0.5"} mr={"$1"}>
-                                    <Text fontSize={"$md"} fontWeight={"$semibold"} marginBottom={"$2"} color="gray.600">
-                                        BMR
-                                    </Text>
-                                    <Input borderColor="#F98D3A" isDisabled={true} padding={"$2"} width="100%" backgroundColor="gray.100">
-                                    <Text fontSize="$md" fontWeight="$bold" color="red.600">
-                                        {BMR.toFixed(2)}
-                                    </Text>
-                                    </Input>
-                                    </Box>
-                                    <Box marginBottom={4} my={"$4"} width="50%">
+                                    <Box marginBottom={4} my={"$1"} width="100%">
                                     <Text fontSize={"$md"} fontWeight={"$semibold"} marginBottom={"$2"} color="gray.600">
                                         TEE
                                     </Text>
@@ -1116,4 +966,4 @@ const DewasaMaternal = () => {
     );
 }
 
-export default DewasaMaternal;
+export default DewasaKritis;

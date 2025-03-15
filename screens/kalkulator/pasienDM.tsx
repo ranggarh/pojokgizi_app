@@ -5,7 +5,7 @@ import { useNavigation } from "@react-navigation/native";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import InfoPopover from "../../components/infoBuble";
+
 
 
 type RootStackParamList = {
@@ -19,7 +19,7 @@ type RootStackParamList = {
   };
 };
 
-const DewasaMaternal = () => {
+const PasienDM = () => {
     const [name, setName] = useState('');
     const [gender, setGender] = useState('');
     const [measurementDate, setMeasurementDate] = useState(new Date());
@@ -32,8 +32,8 @@ const DewasaMaternal = () => {
     const [panjangUlna, setPanjangUlna] = useState<number>(0);
     const [oedema, setOedema] = useState(0);
     const [asites, setAsites] = useState(0);
-    const [faktorAktivitas, setFaktorAktivitas] = useState<number>(0);
-    const [faktorStress, setFaktorStress] = useState<number>(0);
+    const [faktorAktivitas, setFaktorAktivitas] = useState("");
+    const [faktorStress, setFaktorStress] = useState("");
     const [age, setAge] = useState<number>(0);
     const [isOpen, setIsOpen] = useState(false);
     const [errors, setErrors] = useState<{ name: string; gender: string; weight: string; height: string; birthDate: string; measurementDate: string; }>({
@@ -68,6 +68,13 @@ const DewasaMaternal = () => {
     const [bbAdj, setBbAdj] = useState(0); // Hasil BB Adj
     const [selectedRumus, setSelectedRumus] = useState(""); // RUMUS 1 atau 2 otomatis
     const [selectedBB, setSelectedBB] = useState(''); // State untuk menyimpan pilihan BB
+    const [faktorUsia, setFaktorUsia] = useState(0);
+    const [IMT, setIMT] = useState(0);
+    const [klasifikasiIMT, setKlasifikasiIMT] = useState('');
+    const [sliderValue, setSliderValue] = useState(0);
+    const [faktorBB, setFaktorBB] = useState(0);
+
+
 
 
     const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
@@ -80,6 +87,18 @@ const DewasaMaternal = () => {
         
           setAge(years);
           setAgeInMonth(totalMonths);
+
+          let Fu = 0;
+            if (years >= 70) {
+                Fu = 0.2;
+            } else if (years >= 60) {
+                Fu = 0.1;
+            } else if (years > 40) {
+                Fu = 0.05;
+            } else {
+                Fu = 0;
+            }
+            setFaktorUsia(Fu);                   
         };
       const handleDateChange = (event: any, selectedDate?: Date) => {
         if (selectedDate) {
@@ -213,7 +232,7 @@ const DewasaMaternal = () => {
 
         const nutrisiKehamilan: Record<string, { E: number; P: number; L: number; KH: number }> = {
           "0": { E: 0, P: 0, L: 0, KH: 0 },
-          "1": { E: 180, P: 1, L: 2.3, KH: 25 },
+          "1": { E: 300, P: 1, L: 2.3, KH: 25 },
           "2": { E: 300, P: 10, L: 2.3, KH: 40 },
           "3": { E: 300, P: 30, L: 2.3, KH: 40 },
           "4": { E: 330, P: 20, L: 2.2, KH: 45 },
@@ -225,6 +244,23 @@ const DewasaMaternal = () => {
           "1": { value: 1 },
           "2": { value: 5 },
           "3": { value: 10 },
+        };
+
+        const pilihanFaktorAktivitas: Record<string, { value: number;}> = {
+          "0": { value: 1.1 },
+          "1": { value: 1.2 },
+          "2": { value: 1.3 },
+          "3": { value: 1.4 },
+          "4": { value: 1.5 },
+
+        };
+        const pilihanFaktorStress: Record<string, { value: number;}> = {
+          "0": { value: 1 },
+          "1": { value: 1.1 },
+          "2": { value: 1.2 },
+          "3": { value: 1.3 },
+          "4": { value: 1.4 },
+
         };
 
         const pilihanAsites: Record<string, { value: number;}> = {
@@ -242,68 +278,93 @@ const DewasaMaternal = () => {
           }
         }, [weight, oedema, asites]);
 
+        
+
         const bbFinal = selectedBB === "0" ? weight 
               : selectedBB === "1" ? bbi 
               : selectedBB === "2" ? bbAdj 
               : 0;
 
-        const calculateBMR = () => {
-          console.log("Calculating BMR with:", { bbFinal, height, age, gender, method });
-        
-          if (method === "Harben") {
-            if (gender === "Laki Laki") {
-              const bmr = 66.42 + 13.75 * bbFinal + 5 * height - 6.8 * age;
-              console.log("Calculated BMR (Harben, Male):", bmr);
-              return bmr;
-            } else if (gender === "Perempuan") {
-              const bmr = 655.42 + 9.65 * bbFinal + 1.85 * height - 4.68 * age;
-              console.log("Calculated BMR (Harben, Female):", bmr);
-              return bmr;
-            }
-          } else if (method === "Miffin") {
-            if (gender === "Laki Laki") {
-              const bmr = 10 * bbFinal + 6.25 * height - 5 * age + 5;
-              console.log("Calculated BMR (Mifflin, Male):", bmr);
-              return bmr;
-            } else if (gender === "Perempuan") {
-              const bmr = 10 * bbFinal + 6.25 * height - 5 * age - 161;
-              console.log("Calculated BMR (Mifflin, Female):", bmr);
-              return bmr;
-            }
+// ✅ Tambahkan debugging
+        console.log("bbFinal Calculation:", { selectedBB, weight, bbi, bbAdj, bbFinal });
+
+        const calculateBMR = (bbFinal: number, height: number, age: number, gender: string) => {
+          console.log("Calculating BMR with:", { bbFinal, height, age, gender });
+
+          if (!bbFinal || !height || !age || !gender) {
+            console.log("Invalid input, returning default BMR: 0");
+            return 0;
           }
-        
-          console.log("Returning default BMR: 0");
-          return 0;
+
+          let bmr = gender === "Laki Laki" ? bbFinal * 30 : bbFinal * 25;
+
+          console.log("Calculated BMR:", bmr);
+          return bmr;
         };
-      
-        const calculateTEE = (BMR:number, faktorAktivitas:number, faktorStress:number) => {
+
+        const calculateTEE = (
+          BMR: number, 
+          pilihanFaktorAktivitas: number, 
+          pilihanFaktorStress: number, 
+          gender: string, 
+          ketHamil: string, 
+          klasifikasiIMT: string,
+          faktorBB: number,
+          faktorUsia: number // ✅ Tambahkan faktorBB sebagai parameter
+        ) => {
           console.log("Calculating TEE with:", {
-              BMR,
-              faktorAktivitas,
-              faktorStress,
-              gender,
-              ketHamil,
+            BMR, pilihanFaktorAktivitas, faktorUsia,pilihanFaktorStress, gender, ketHamil, klasifikasiIMT, faktorBB
           });
-      
-          let TEE = BMR * faktorAktivitas * faktorStress;
-          
-          if (gender === 'Perempuan') {
+
+          if (!BMR || !pilihanFaktorAktivitas || !pilihanFaktorStress) {
+            console.log("Invalid input, returning default TEE: 0");
+            return 0;
+          }
+
+          let faktorBBNumber = Number(faktorBB) > 1 ? Number(faktorBB) / 100 : Number(faktorBB);
+          let faktorBBOperator = 0;
+
+          if (klasifikasiIMT === "BB Kurang") {
+            faktorBBOperator = +(faktorBBNumber * BMR);
+          } else if (klasifikasiIMT === "BB Lebih") {
+            faktorBBOperator = -(faktorBBNumber * BMR);
+          }
+
+          let TEE = (BMR * pilihanFaktorAktivitas * pilihanFaktorStress) - (faktorUsia * BMR) + faktorBBOperator;
+
+          if (gender === "Perempuan" && nutrisiKehamilan[ketHamil]) {
             TEE += nutrisiKehamilan[ketHamil].E;
           }
-      
+
+          
+          console.log("TEE Breakdown:", {
+            step1: BMR * pilihanFaktorAktivitas * pilihanFaktorStress,
+            step2: faktorUsia * BMR,
+            step3: faktorBBOperator,
+            final: (BMR * pilihanFaktorAktivitas * pilihanFaktorStress) - (faktorUsia * BMR) + faktorBBOperator
+          });
           console.log("Returning TEE:", TEE);
           return TEE;
-      };
-      
-      
+        };
+
         useEffect(() => {
           console.log("Weight:", weight, "Height:", height, "Age:", age, "Gender:", gender, "Method:", method);
-          const newBMR = calculateBMR();
-          setBMR(newBMR);
-          setTEE(calculateTEE(newBMR, faktorAktivitas, faktorStress));
-        }, [weight, height, age, gender, method, faktorAktivitas, faktorStress, ketHamil]);
 
-        const getStatusKEK = (gender: string, lila: number) => {
+          if (!weight || !height || !age || !gender) {
+            console.log("Invalid input detected, skipping BMR calculation.");
+            return;
+          }
+
+          const newBMR = calculateBMR(bbFinal, height, age, gender);
+          setBMR(newBMR);
+
+          const faktorAktivitasValue = pilihanFaktorAktivitas[faktorAktivitas]?.value || 1;
+          const faktorStressValue = pilihanFaktorStress[faktorStress]?.value || 1;
+
+          setTEE(calculateTEE(newBMR, faktorAktivitasValue, faktorStressValue, gender, ketHamil, klasifikasiIMT, Number(faktorBB), faktorUsia));
+        }, [weight, height, age, gender, method, faktorAktivitas, faktorStress, ketHamil, klasifikasiIMT, faktorBB]);
+
+              const getStatusKEK = (gender: string, lila: number) => {
           if (gender === "Laki-Laki") return "-";
           if (gender === "Perempuan" && lila < 23.5) return "KEK";
           return "Tidak KEK";
@@ -370,10 +431,35 @@ const DewasaMaternal = () => {
             setBbAdj("0");
           }
         }, [bbi, weight, oedema, asites]);
-        
-        
-    
 
+        const classifyIMT = (imtvalue) => {
+          if (imtvalue < 18.5) return "BB Kurang";
+          if (imtvalue >= 18.5 && imtvalue <= 22.9) return "BB Normal";
+          return "BB Lebih";
+      };
+      
+      const calculateIMT = (weight: number, height: number) => {
+          const w = parseFloat(weight);
+          const h = parseFloat(height) / 100; // Konversi tinggi dari cm ke meter
+      
+          console.log("Weight:", w, "Height (m):", h); // Debugging
+      
+          if (w > 0 && h > 0) {
+              const imtValue = w / (h * h);
+              console.log("IMT Value:", imtValue); // Debugging
+      
+              const classification = classifyIMT(imtValue);
+              
+              setIMT(imtValue.toFixed(2));
+              setKlasifikasiIMT(classification);
+          } else {
+              setIMT(null);
+              setKlasifikasiIMT('');
+              setSliderValue(0);
+          }
+      };
+      
+        
     return (
         <Box>
             <Box width="100%" h={120} bg={"#23b160"} flexDirection="row" justifyContent="space-between">
@@ -435,7 +521,8 @@ const DewasaMaternal = () => {
                         {errors.measurementDate ? <Text color="red" fontSize="$sm">{errors.measurementDate}</Text> : null}
                         </Box>
                     </HStack>
-                    <Box marginBottom={4} my={"$4"}>
+                    <HStack>
+                    <Box marginBottom={4} ml={"-$0.5"} mr={"$1"} width="50%" my={"$4"}>
                         <Text fontSize={"$md"} fontWeight={"$semibold"} marginBottom={"$2"} color="gray.600">
                         Usia (Tahun)
                         </Text>
@@ -443,6 +530,15 @@ const DewasaMaternal = () => {
                         <Text>{age} Tahun</Text>
                         </Input>
                     </Box>
+                    <Box marginBottom={4} width="50%" my={"$4"}>
+                        <Text fontSize={"$md"} fontWeight={"$semibold"} marginBottom={"$2"} color="gray.600">
+                        Faktor Usia
+                        </Text>
+                        <Input borderColor="#F98D3A" isDisabled={true} padding={"$2"} width="100%" backgroundColor="gray.100">
+                        <Text>{faktorUsia * 100} %</Text>
+                        </Input>
+                    </Box>
+                    </HStack>
                     <Box marginBottom={4} my={"$4"}>
                         <Text fontSize={"$md"} fontWeight={"$semibold"} marginBottom={"$2"} color="gray.600">
                         Jenis Kelamin
@@ -471,13 +567,10 @@ const DewasaMaternal = () => {
                         <Text fontSize={"$md"} fontWeight={"$semibold"} marginBottom={"$2"} color="gray.600">
                             Berat Badan (kg)
                         </Text>
-                        {/* <InfoPopover 
-                          title="Add Employee" 
-                          message="The employee ID field should have a unique value. You will be able to create a user permission for the newly added employee." 
-                        /> */}
                         <Input borderColor="#F98D3A" padding={"$2"} width="100%" backgroundColor="gray.100">
                             <InputField keyboardType="numeric" placeholder="Enter Text here" onChangeText={text => {
-                            setWeight(parseFloat(text) || 0);
+                            setWeight(text);
+                            calculateIMT(text, height);
                             }} />
                         </Input>
                         {errors.weight ? <Text color="red" fontSize="$sm">{errors.weight}</Text> : null}
@@ -488,13 +581,41 @@ const DewasaMaternal = () => {
                         </Text>
                         <Input borderColor="#F98D3A" width="100%" padding={"$2"} backgroundColor="gray.100">
                             <InputField keyboardType="numeric" placeholder="Enter Text here" onChangeText={text => {
-                            setHeight(parseFloat(text) || 0);
+                            setHeight(text);
+                            calculateIMT(weight, text);
                             }} />
                         </Input>
                         {errors.height ? <Text color="red" fontSize="$sm">{errors.height}</Text> : null}
                         </Box>
                     </HStack>
-                    
+                    <HStack>
+                    <Box marginBottom={4} width="50%" my={"$4"} ml={"-$0.5"} mr={"$1"}>
+                        <Text fontSize={"$md"} fontWeight={"$semibold"} marginBottom={"$2"} color="gray.600">
+                        IMT
+                        </Text>
+                        <Input borderColor="#F98D3A" isDisabled={true} padding={"$2"} width="100%" backgroundColor="gray.100">
+                        <Text>{IMT}</Text>
+                        </Input>
+                    </Box>
+                    <Box marginBottom={4} width="50%" my={"$4"}>
+                        <Text mt={38} fontWeight="$bold" ml={'$2'}>{klasifikasiIMT}</Text>
+                    </Box>
+                    </HStack>
+                    {klasifikasiIMT !== "BB Normal" && (
+                      <Box marginBottom={4} my={"$4"} flex={1}>
+                        <Text fontSize={"$md"} fontWeight={"$semibold"} marginBottom={"$2"} color="gray.600">
+                          Faktor BB
+                        </Text>
+                        <Input borderColor="#F98D3A" padding={"$2"} width="100%" backgroundColor="gray.100">
+                          <InputField 
+                            keyboardType="numeric" 
+                            placeholder="Enter Text here" 
+                            onChangeText={text => setFaktorBB(text)} 
+                          />
+                        </Input>
+                        {errors.weight ? <Text color="red" fontSize="$sm">{errors.weight}</Text> : null}
+                      </Box>
+                    )}
                     <VStack justifyContent="space-between" gap={"$2"} mb={"$1"}>
                       <HStack gap={4}>
                         <Box marginBottom={4} my={"$4"} flex={1}  >
@@ -503,7 +624,7 @@ const DewasaMaternal = () => {
                         </Text>
                         <Input borderColor="#F98D3A" padding={"$2"} width="100%" backgroundColor="gray.100">
                             <InputField keyboardType="numeric" placeholder="Enter Text here" onChangeText={text => {
-                            setLila(parseFloat(text) || 0);
+                            setLila(text);
                             }} />
                         </Input>
                         {errors.weight ? <Text color="red" fontSize="$sm">{errors.weight}</Text> : null}
@@ -514,7 +635,7 @@ const DewasaMaternal = () => {
                         </Text>
                         <Input borderColor="#F98D3A" padding={"$2"} width="100%" backgroundColor="gray.100">
                             <InputField keyboardType="numeric" placeholder="Enter Text here" onChangeText={text => {
-                            setTinggiLutut(parseFloat(text) || 0);
+                            setTinggiLutut(text);
                             }} />
                         </Input>
                         {errors.weight ? <Text color="red" fontSize="$sm">{errors.weight}</Text> : null}
@@ -525,7 +646,7 @@ const DewasaMaternal = () => {
                         </Text>
                         <Input borderColor="#F98D3A" padding={"$2"} width="100%" backgroundColor="gray.100">
                             <InputField keyboardType="numeric" placeholder="Enter Text here" onChangeText={text => {
-                            setPanjangUlna(parseFloat(text) || 0);
+                            setPanjangUlna(text);
                             }} />
                         </Input>
                         {errors.weight ? <Text color="red" fontSize="$sm">{errors.weight}</Text> : null}
@@ -533,78 +654,14 @@ const DewasaMaternal = () => {
                       </HStack>
                       
                     </VStack>
-                    {/* Oederma */}
-                    {/* <Box marginBottom={"$2"} my={"$2"}>
-                        <Text fontSize={"$md"} fontWeight={"$semibold"} marginBottom={"$2"} color="gray.600">
-                        Oederma
-                        </Text>                
-                        <Select>
-                          <SelectTrigger borderColor="#F98D3A" variant="underlined" size="md" >
-                            <SelectInput placeholder="Pilih Gejala Oederma" mx="$3"/>
-                            <SelectIcon mr="$3" >
-                              <Icon as={ChevronDownIcon} />
-                            </SelectIcon>
-                          </SelectTrigger>
-                          <SelectPortal>
-                            <SelectBackdrop/>
-                            <SelectContent>
-                              <SelectDragIndicatorWrapper>
-                                <SelectDragIndicator />
-                              </SelectDragIndicatorWrapper>
-                              <SelectItem label="Tidak Ada" value="0" />
-                              <SelectItem label="Kedua Pergelangan Kaki" value="1" />
-                              <SelectItem
-                                label="Kedua Kaki, Tangan, Lengan Bawah dan Tungkai Bawah"
-                                value="2"
-                              />
-                              <SelectItem
-                                label="Edema pitting bilateral menyeluruh, meliputi kedua tungkai, lengan, kaki, dan wajah"
-                                value="3"
-                              />
-                            </SelectContent>
-                          </SelectPortal>
-                        </Select>
-                    </Box> */}
-                    {/* Asites */}
-                    {/* <Box marginBottom={"$2"} my={"$4"}>
-                        <Text fontSize={"$md"} fontWeight={"$semibold"} marginBottom={"$2"} color="gray.600">
-                        Asites
-                        </Text>                
-                        <Select>
-                          <SelectTrigger borderColor="#F98D3A" variant="underlined" size="md" >
-                            <SelectInput placeholder="Pilih Gejala Asites" mx="$3"/>
-                            <SelectIcon mr="$3">
-                              <Icon as={ChevronDownIcon} />
-                            </SelectIcon>
-                          </SelectTrigger>
-                          <SelectPortal>
-                            <SelectBackdrop/>
-                            <SelectContent>
-                              <SelectDragIndicatorWrapper>
-                                <SelectDragIndicator />
-                              </SelectDragIndicatorWrapper>
-                              <SelectItem label="Tidak Ada" value="0" />
-                              <SelectItem label="Asites hanya dapat dideteksi dengan pemeriksaan USG" value="1" />
-                              <SelectItem
-                                label="Asites menyebabkan distensi perut simetris sedang"
-                                value="2"
-                              />
-                              <SelectItem
-                                label="Asites menyebabkan distensi perut yang nyata"
-                                value="3"
-                              />
-                            </SelectContent>
-                          </SelectPortal>
-                        </Select>
-                    </Box> */}
-                    <HStack justifyContent="space-between" mb={"$2"}>
+                    {/* <HStack justifyContent="space-between" mb={"$2"}>
                         <Box marginBottom={4} my={"$4"} width="50%" ml={"-$0.5"} mr={"$1"}>
                         <Text fontSize={"$md"} fontWeight={"$semibold"} marginBottom={"$2"} color="gray.600">
                             Faktor Aktivitas
                         </Text>
                         <Input borderColor="#F98D3A" padding={"$2"} width="100%" backgroundColor="gray.100">
                             <InputField keyboardType="numeric" placeholder="Enter Text here" onChangeText={text => {
-                            setFaktorAktivitas(parseFloat(text) || 0);
+                            setFaktorAktivitas(text);
                             }} />
                         </Input>
                         {errors.weight ? <Text color="red" fontSize="$sm">{errors.weight}</Text> : null}
@@ -615,12 +672,63 @@ const DewasaMaternal = () => {
                         </Text>
                         <Input borderColor="#F98D3A" width="100%" padding={"$2"} backgroundColor="gray.100">
                             <InputField keyboardType="numeric" placeholder="Enter Text here" onChangeText={text => {
-                            setFaktorStress(parseFloat(text) || 0);
+                            setFaktorStress(text);
                             }} />
                         </Input>
                         {errors.height ? <Text color="red" fontSize="$sm">{errors.height}</Text> : null}
                         </Box>
-                    </HStack>
+                    </HStack> */}
+                    <Box width={"100%"} my={"$1.5"}>
+                        <Text fontSize={"$sm"} fontWeight={"$semibold"} marginBottom={"$2"} color="gray.600">
+                          Faktor Aktivitas
+                        </Text>
+                        <Select selectedValue={String(faktorAktivitas)} onValueChange={(value) => setFaktorAktivitas(value)}>
+                          <SelectTrigger borderColor="#F98D3A" variant="underlined" size="md">
+                            <SelectInput placeholder="Pilih Kondisi" mx="$3" />
+                            <SelectIcon>
+                              <Icon as={ChevronDownIcon} />
+                            </SelectIcon>
+                          </SelectTrigger>
+                          <SelectPortal>
+                            <SelectBackdrop />
+                            <SelectContent>
+                              <SelectDragIndicatorWrapper>
+                                <SelectDragIndicator />
+                              </SelectDragIndicatorWrapper>
+                              <SelectItem label="Tidak Ada / Istirahat" value="0" />
+                              <SelectItem label="Aktivitas ringan: pegawai kantor, guru, ibu rumah tangga" value="1" />
+                              <SelectItem label="Aktivitas sedang: pegawai industri ringan, mahasiswa, militer yang sedang tidak berperang" value="2" />
+                              <SelectItem label="Aktivitas berat: petani, buruh, atlet, militer dalam keadaaan latihan" value="3" />
+                              <SelectItem label="Aktivitas sangat berat: tukang becak, tukang gali dst" value="4" />
+                            </SelectContent>
+                          </SelectPortal>
+                        </Select>
+                      </Box>
+                      <Box width={"100%"} my={"$1.5"}>
+                        <Text fontSize={"$sm"} fontWeight={"$semibold"} marginBottom={"$2"} color="gray.600">
+                          Faktor Stress
+                        </Text>
+                        <Select selectedValue={String(faktorStress)} onValueChange={(value) => setFaktorStress(value)}>
+                          <SelectTrigger borderColor="#F98D3A" variant="underlined" size="md">
+                            <SelectInput placeholder="Pilih Kondisi" mx="$3" />
+                            <SelectIcon>
+                              <Icon as={ChevronDownIcon} />
+                            </SelectIcon>
+                          </SelectTrigger>
+                          <SelectPortal>
+                            <SelectBackdrop />
+                            <SelectContent>
+                              <SelectDragIndicatorWrapper>
+                                <SelectDragIndicator />
+                              </SelectDragIndicatorWrapper>
+                              <SelectItem label="Tidak Ada" value="0" />
+                              <SelectItem label="Ringan" value="1" />
+                              <SelectItem label="Sedang" value="2" />
+                              <SelectItem label="Berat" value="3" />
+                            </SelectContent>
+                          </SelectPortal>
+                        </Select>
+                      </Box>
                     <Box width={"100%"} my={"$1.5"}>
                         <Text fontSize={"$sm"} fontWeight={"$semibold"} marginBottom={"$2"} color="gray.600">
                           Oedema
@@ -801,7 +909,7 @@ const DewasaMaternal = () => {
                         >
                           <SelectTrigger borderColor="#F98D3A" variant="underlined" size="md">
                             <SelectInput placeholder="Pilih BB" mx="$3" isDisabled={selectedBB === '0'} />
-                            <SelectIcon>
+                            <SelectIcon mr="$3">
                               <Icon as={ChevronDownIcon} />
                             </SelectIcon>
                           </SelectTrigger>
@@ -846,27 +954,7 @@ const DewasaMaternal = () => {
                         <Box bg="white" softShadow={"4"}> 
                             <Box ml="$4" minWidth="$8" borderRadius="$sm" alignSelf="flex-start" px="$4" h="$8" mt="$4" justifyContent="center" bg="#F98D3A"><Text color="white" fontWeight="$bold" fontSize="$sm">Kebutuhan Energi</Text></Box>
                             <Box mx="$4">
-                            <Box marginBottom={"$4"} my={"$4"}>
-                            <Text fontSize={"$md"} fontWeight={"$semibold"} marginBottom={"$2"} color="gray.600">
-                                Metode
-                            </Text>
-                            <RadioGroup value={method} onChange={setMethod}>
-                                <HStack space="2xl">
-                                <Radio value="Harben">
-                                    <RadioIndicator mr="$2">
-                                    <RadioIcon as={CircleIcon} color="#23b160" />
-                                    </RadioIndicator>
-                                    <RadioLabel>Harben</RadioLabel>
-                                </Radio>
-                                <Radio value="Miffin">
-                                    <RadioIndicator mr="$2">
-                                    <RadioIcon as={CircleIcon} color="#23b160" />
-                                    </RadioIndicator>
-                                    <RadioLabel>Miffin</RadioLabel>
-                                </Radio>
-                                </HStack>
-                            </RadioGroup>
-                            </Box>
+        
                                 <Box>
                                 <HStack justifyContent="space-between" mb={"$4"}>
                                     <Box marginBottom={4} my={"$4"} width="50%" ml={"-$0.5"} mr={"$1"}>
@@ -1116,4 +1204,4 @@ const DewasaMaternal = () => {
     );
 }
 
-export default DewasaMaternal;
+export default PasienDM;
