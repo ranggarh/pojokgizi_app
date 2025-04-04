@@ -1,5 +1,6 @@
 import React, {useState } from 'react';
 import {useRoute, RouteProp} from '@react-navigation/native';
+import ResultScreen from './ResultScreen';
 
 // Import the JSON files statically
 import balitaLakiLakiBBU from '../../data_static/balita_laki_laki/BBU.json';
@@ -11,7 +12,6 @@ import balitaPerempuanBBTB from '../../data_static/balita_perempuan/BBTB.json';
 import balitaPerempuanBBPB from '../../data_static/balita_perempuan/BBPB.json';
 import balitaPerempuanTBPBU from '../../data_static/balita_perempuan/TBPBU.json';
 import { Box, ScrollView, Text, Avatar, VStack, Button } from '@gluestack-ui/themed';
-
 
 // Fungsi untuk memuat JSON berdasarkan jenis kelamin dan tipe data
 const loadJsonData = (gender: string, type: string) => {
@@ -110,7 +110,6 @@ const calculateZScorePBU = (age: number, panjangBadan: number, data: any) => {
     return (Math.pow(panjangBadan / M_value, L_value) - 1) / (L_value * S_value);
 };
 
-
 type PerhitunganParams = {
   name: string;
   age: number;
@@ -133,6 +132,7 @@ const ZScoreCalculator: React.FC<PerhitunganScreenProps> = ({ route }) => {
   const [chartIndex, setChartIndex] = useState(0); // 0: BB/U, 1: TB/U, 2: IMT
   const [interpretation, setInterpretation] = useState('');
   const [hasil, setHasil] = useState('');
+  const [selectedZScore, setSelectedZScore] = useState<number | null>(null);
   
     console.log("Data yang diterimaaa ke ZScoreCalculator:", { age, weight, gender, height, posisiPengukuran });
     
@@ -208,91 +208,24 @@ const ZScoreCalculator: React.FC<PerhitunganScreenProps> = ({ route }) => {
           setHasil('');
       }
     };
-    
+
+    const handleZScoreChange = (zScore: number | null) => {
+      setSelectedZScore(zScore);
+    };
 
     return (
-      // <View>
-      //   <Text>Z-Score BB/U: {zScoreBbu !== null ? zScoreBbu : "null"}</Text>
-      //   {panjangBadan === null ? (
-      //     <>
-      //       <Text>Z-Score TB/U: {zScoreTBU !== null ? zScoreTBU : "null"}</Text>
-      //       <Text>Z-Score BB/TB: {zScoreBBTB !== null ? zScoreBBTB : "null"}</Text>
-      //     </>
-      //   ) : (
-      //     <>
-      //       <Text>Z-Score PB/U: {zScorePBU !== null ? zScorePBU : "null"}</Text>
-      //       <Text>Z-Score BB/PB: {zScoreBBPB !== null ? zScoreBBPB : "null"}</Text>
-      //     </>
-      //   )}
-      // </View>
-
-      <ScrollView bg={"#cbf5df"}>
-     {/* <Box bg='white' height={"$40"}>
-    {renderChart()}
-    </Box> */}
-    <Box px={"$4"} mx={'$4'} mt={'$6'}  height={"$fit"} bg={'white'} borderRadius={"$lg"} softShadow='1'>
-      <Box my={"$4"} flexDirection='row'>
-        <Avatar></Avatar>
-        <VStack ml={"$4"} mx={"$4"}>
-          <Text>{name}</Text>
-          <Text>{ageInYears} {age} Bulan</Text>
-        </VStack>
-        
-      </Box>
-    </Box>
-
-    <Box px={"$4"} mx={'$4'} mt={'$4'}  height={"$fit"} bg={'white'} borderRadius={"$lg"} softShadow='1'>
-      <Box my={"$4"} justifyContent="center" alignItems="center" mx={"$4"}>
-        <Box alignItems="center" >
-          <Text>Status Gizi Anda:</Text>
-          <Box flexDirection='row'>
-            <Button my={"$2"} bg={"#23b160"} onPress={handlePrevious}></Button>
-            <Box w='$48'>
-            <Text my={"$3"} textAlign="center" fontWeight="$bold" color="green" mx={"$2"} fontSize="$lg">
-            {interpretation}
-            </Text>
-            </Box>
-
-            <Button my={"$2"} bg={"#23b160"} onPress={handleNext}></Button>
-          </Box>
-        </Box>
-      </Box>
-
-
-      <Box  flexDirection='row' gap={"$1"} ml='-$1' mx="$1" my="$3" alignItems='center' justifyContent='space-between'>
-        <Box w="$1/3"  h={"$20"} px={"$2"} softShadow='1' bg="$white" borderRadius={"$5"} py={"$2"}>
-          
-          <Button bg={'#23b160'} w={"$full"} h={"$6"} borderRadius={"$sm"}><Text color={'white'} fontWeight={'$bold'} textAlign='center' fontSize={'$xs'}>Berat</Text></Button>           
-          <Text mt={"$2"} fontWeight={'$bold'} fontSize={'$lg'} textAlign='center'>{weight} Kg</Text>
-        </Box>
-        <Box w="$1/3" h={"$20"} px={"$2"} softShadow='1' bg="$white" borderRadius={"$5"} py={"$2"}>
-        <Button bg={'#23b160'} w={"$full"} h={"$6"} borderRadius={"$sm"}><Text color={'white'} fontWeight={'$bold'} textAlign='center' fontSize={'$xs'}>{panjangBadan ? `PB` : height ? `TB` : '0 Cm'}</Text></Button>           
-        <Text mt={"$2"} fontWeight={'$bold'} fontSize={'$lg'} textAlign='center'>
-          {panjangBadan ? `${panjangBadan} Cm` : height ? `${height} Cm` : '0 Cm'}
-        </Text>       
-        </Box>
-        <Box w="$1/3" h={"$20"} px={"$2"} softShadow='1' bg="$white" borderRadius={"$5"} py={"$2"}>
-          <Button bg={'#23b160'} w={"$full"} h={"$6"} borderRadius={"$sm"}><Text color={'white'} fontWeight={'$bold'} textAlign='center' fontSize={'$xs'}>Cara Ukur</Text></Button>           
-        <Text mt={"$2"} fontWeight={'$bold'} fontSize={'$lg'} textAlign='center'>{posisiPengukuran ?? 0}</Text>
-        </Box>
-
-      </Box>
-    </Box>
-
-    <Box px={"$4"} mx={'$4'} mt={'$4'}  height={"$72"} bg={'white'} borderRadius={"$lg"} softShadow='1'>
-      <Box my={"$4"} mx={"$4"}>
-        <Box bg={"#23b160"} py={'$2'} width={'$40'} alignSelf='center' borderRadius={5}>
-          <Text textAlign='center' fontWeight="bold" color='white'> Interpretasi Hasil</Text>
-        </Box>
-      </Box>
-      <Text px={"$2"}>{hasil}</Text>
-      
-    </Box>
-
-      {/* <Text>Z-Score BB/U: {zScoreBbu !== null ? zScoreBbu : "Data tidak tersedia"}</Text>
-      <Text>Z-Score TB/U: {zScoreTBU !== null ? zScoreTBU : "Data tidak tersedia"}</Text>
-      <Text>Z-Score IMT: {zScoreIMT !== null ? zScoreIMT : "Data tidak tersedia"}</Text> */}
-    </ScrollView>
+      <ResultScreen
+        name={name}
+        age={age}
+        ageInYears={ageInYears}
+        weight={weight}
+        height={height}
+        imt={null} // Balita mungkin tidak memiliki IMT
+        interpretation={interpretation}
+        hasil={hasil}
+        selectedZScore={selectedZScore}
+        handleZScoreChange={handleZScoreChange}
+      />
     );
 };
 

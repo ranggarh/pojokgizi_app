@@ -1,10 +1,11 @@
 // GrowthChart.js
-import { Box, Text, HStack, Select, SelectTrigger, SelectInput, SelectIcon, SelectPortal, SelectContent, SelectDragIndicatorWrapper, SelectDragIndicator, SelectItem, Button } from '@gluestack-ui/themed';
-import React, { useState, useEffect } from 'react';
-import { View, StyleSheet, Dimensions } from 'react-native';
+import { Box, Text, HStack, Select, SelectTrigger, SelectInput, SelectIcon, SelectPortal, SelectContent, SelectDragIndicatorWrapper, SelectDragIndicator, SelectItem, Button, Pressable } from '@gluestack-ui/themed';
+import React, { useState, useEffect, useRef } from 'react';
+import { View, StyleSheet, Dimensions, ScrollView } from 'react-native';
 import { LineChart } from 'react-native-chart-kit';
 import Svg, { Circle, Text as SvgText } from 'react-native-svg';
 import { ChevronDownIcon, ChevronLeftIcon, ChevronRightIcon } from '@gluestack-ui/themed';
+import { Ionicons } from '@expo/vector-icons';
 
 // Import reference data from separate files
 import { weightReferenceData } from './../../../data_static/batas_grafik/batasBerat';
@@ -25,6 +26,7 @@ interface UserDataPoint {
 const GrowthChart = ({ userDataPoint, gender = 'boys', activeChartType }: { userDataPoint: UserDataPoint, gender?: string, activeChartType?: string }) => {
   // Chart type state
   const [chartType, setChartType] = useState('weight-for-age'); // 'weight-for-age' or 'bmi-for-age'
+  const scrollViewRef = useRef(null);
 
   // Chart types list with grouping information
   const chartTypes = [
@@ -42,14 +44,14 @@ const GrowthChart = ({ userDataPoint, gender = 'boys', activeChartType }: { user
 
   // Find current chart info
   const currentChartInfo = chartTypes.find(c => c.id === chartType);
-  
+
   // Navigation handlers - modified to respect grouping
   const goToPrevious = () => {
     // If current chart is not in the weight-bmi group, no navigation
     if (!currentChartInfo || currentChartInfo.group !== 'weight-bmi') {
       return;
     }
-    
+
     // Only navigate between weight and BMI
     if (chartType === 'weight-for-age') {
       setChartType('bmi-for-age');
@@ -63,7 +65,7 @@ const GrowthChart = ({ userDataPoint, gender = 'boys', activeChartType }: { user
     if (!currentChartInfo || currentChartInfo.group !== 'weight-bmi') {
       return;
     }
-    
+
     // Only navigate between weight and BMI
     if (chartType === 'weight-for-age') {
       setChartType('bmi-for-age');
@@ -94,9 +96,22 @@ const GrowthChart = ({ userDataPoint, gender = 'boys', activeChartType }: { user
     }
   }, [userDataPoint]);
 
+  // Auto-scroll to user's data point when chart loads or changes
+  useEffect(() => {
+    if (userPoint && scrollViewRef.current) {
+      // Add a small delay to ensure chart has rendered
+      setTimeout(() => {
+        scrollViewRef.current.scrollTo({
+          x: Math.max(0, userPoint.x - width / 2),
+          animated: true
+        });
+      }, 100);
+    }
+  }, [chartType, selectedRange, userDataPoint]);
+
   // Get current reference data based on selection and chart type
   const getReferenceData = () => {
-    switch(chartType) {
+    switch (chartType) {
       case 'weight-for-age':
         return weightReferenceData;
       case 'height-for-age':
@@ -110,10 +125,13 @@ const GrowthChart = ({ userDataPoint, gender = 'boys', activeChartType }: { user
     }
   };
 
-  const referenceData: { [key: string]: { months: number[], boys: { zScorePlus3: number[], zScorePlus2: number[], zScorePlus0: number[], zScoreMinus2: number[], zScoreMinus3: number[] }, girls: { zScorePlus3: number[], zScorePlus2: number[], zScorePlus0: number[], zScoreMinus2: number[], zScoreMinus3: number[] } } } = getReferenceData();
+  const referenceData = getReferenceData();
   const currentRangeData = referenceData[selectedRange];
   const months = currentRangeData.months;
   const genderData = gender === 'boys' ? currentRangeData.boys : currentRangeData.girls;
+  
+  // Calculate chart width based on data points - make wider for scrolling
+  const chartWidth = Math.max(width, months.length * 50); // At least screen width, or 50px per data point
 
   // Chart configuration
   const chartConfig = {
@@ -171,10 +189,10 @@ const GrowthChart = ({ userDataPoint, gender = 'boys', activeChartType }: { user
     if (!userDataPoint || userDataPoint.month === undefined) {
       return null;
     }
-  
+
     // Get required property based on chart type
     const getRequiredProperty = () => {
-      switch(chartType) {
+      switch (chartType) {
         case 'weight-for-age':
           return 'weight';
         case 'height-for-age':
@@ -187,7 +205,7 @@ const GrowthChart = ({ userDataPoint, gender = 'boys', activeChartType }: { user
           return 'weight';
       }
     };
-  
+
     const requiredProperty = getRequiredProperty();
     if (userDataPoint[requiredProperty] === undefined) {
       return null;
@@ -200,8 +218,8 @@ const GrowthChart = ({ userDataPoint, gender = 'boys', activeChartType }: { user
       return null;
     }
 
-    // Calculate x position based on month index
-    const xStep = (width - 64) / (months.length - 1);
+    // Calculate x position based on month index - adjust for scrollable chart
+    const xStep = (chartWidth - 64) / (months.length - 1);
     const x = monthIndex * xStep + 32; // 32 is left padding
 
     // Calculate y position based on measurement
@@ -211,7 +229,7 @@ const GrowthChart = ({ userDataPoint, gender = 'boys', activeChartType }: { user
   };
 
   const getUnit = () => {
-    switch(chartType) {
+    switch (chartType) {
       case 'weight-for-age':
         return 'kg';
       case 'height-for-age':
@@ -226,7 +244,7 @@ const GrowthChart = ({ userDataPoint, gender = 'boys', activeChartType }: { user
   };
 
   // Calculate y position based on measurement value
-  const getYPosition = (value: number) => {
+  const getYPosition = (value) => {
     // Get min and max from reference data
     const allValues = Object.values(genderData).flat();
     const minValue = Math.min(...allValues);
@@ -243,7 +261,7 @@ const GrowthChart = ({ userDataPoint, gender = 'boys', activeChartType }: { user
   const userPoint = getUserPointPosition();
 
   // Get range description
-  const getRangeDescription = (range: string) => {
+  const getRangeDescription = (range) => {
     const [start, end] = range.split('-');
     return `${start} to ${end} months`;
   };
@@ -256,40 +274,45 @@ const GrowthChart = ({ userDataPoint, gender = 'boys', activeChartType }: { user
       {/* Navigation buttons and title */}
       <HStack alignItems="center" justifyContent="space-between" mb="$2">
         {shouldShowNavButtons() ? (
-          <Button onPress={goToPrevious}>
-            <ChevronLeftIcon size="md" />
-          </Button>
+          <Pressable onPress={goToPrevious} hitSlop={8}>
+            <Box p="$2">
+              <Ionicons name="chevron-back" size={24} color="#007AFF" />
+            </Box>
+          </Pressable>
         ) : (
           <Box flex={1} /> // Flexible spacer when no button
         )}
-        
-        <Text style={styles.title}>
-          {currentChartTitle} {gender.toUpperCase()}
-        </Text>
-        
+        <Box borderRadius="$lg" p="$2" mx="$4" shadow="1">
+          <Text my="$2" style={styles.title}>
+            {currentChartTitle}
+          </Text>
+        </Box>
+
         {shouldShowNavButtons() ? (
-          <Button onPress={goToNext}>
-            <ChevronRightIcon size="md" />
-          </Button>
+          <Pressable onPress={goToNext} hitSlop={8}>
+            <Box p="$2">
+              <Ionicons name="chevron-forward" size={24} color="#007AFF" />
+            </Box>
+          </Pressable>
         ) : (
           <Box flex={1} /> // Empty spacer when no button
         )}
       </HStack>
 
-      <HStack justifyContent="space-between" mx="$4" mt="$2" mb="$4">
+      <HStack justifyContent="space-between" px="$6" mt="$2" mb="$4">
         <Box>
-          <Text>Grafik Standar WHO</Text>
-          <Text>{chartType === 'weight-for-age' ? 'Berat Badan (Kg)' : 
-                 chartType === 'height-for-age' ? 'Tinggi Badan (cm)' :
-                 chartType === 'head-circumference-for-age' ? 'Lingkar Kepala (cm)' : 
-                 'IMT (kg/m²)'}</Text>
+          <Text fontSize="$sm" fontWeight="$bold">Grafik Standar WHO</Text>
+          <Text fontSize="$sm" fontWeight="$bold">{chartType === 'weight-for-age' ? 'Berat Badan (Kg)' :
+            chartType === 'height-for-age' ? 'Tinggi Badan (cm)' :
+              chartType === 'head-circumference-for-age' ? 'Lingkar Kepala (cm)' :
+                'IMT (kg/m²)'}</Text>
         </Box>
         {/* Age Range Dropdown */}
         <Box alignItems="center" mb="$2">
           <Select
             selectedValue={selectedRange}
             onValueChange={value => setSelectedRange(value)}
-            minWidth={200}
+            minWidth={160}
           >
             <SelectTrigger variant="outline" size="md">
               <SelectInput placeholder="Select age range" />
@@ -315,44 +338,54 @@ const GrowthChart = ({ userDataPoint, gender = 'boys', activeChartType }: { user
         </Box>
       </HStack>
 
-      <View style={styles.chartContainer}>
-        <LineChart
-          data={data}
-          width={width - 64}
-          height={250}
-          chartConfig={chartConfig}
-          bezier={false}
-          style={styles.chart}
-          withDots={false}
-          withInnerLines={true}
-          withOuterLines={true}
-          withHorizontalLabels={true}
-          withVerticalLabels={true}
-          fromZero={false}
-          verticalLabelRotation={0}
-          xAxisLabel=""
-          yAxisLabel=""
-          yAxisSuffix=""
-        />
-
-        {userPoint && (
-          <Svg style={StyleSheet.absoluteFill}>
-            <Circle
-              cx={userPoint.x}
-              cy={userPoint.y}
-              r={5}
-              fill="blue"
+      {/* Scrollable Chart Container */}
+      <View style={styles.chartOuterContainer}>
+        <ScrollView 
+          horizontal 
+          ref={scrollViewRef}
+          showsHorizontalScrollIndicator={true}
+          contentContainerStyle={styles.scrollViewContent}
+        >
+          <View style={[styles.chartContainer, { width: chartWidth }]}>
+            <LineChart
+              data={data}
+              width={chartWidth - 32} // Adjust width to be scrollable
+              height={250}
+              chartConfig={chartConfig}
+              bezier={false}
+              style={styles.chart}
+              withDots={false}
+              withInnerLines={true}
+              withOuterLines={true}
+              withHorizontalLabels={true}
+              withVerticalLabels={true}
+              fromZero={false}
+              verticalLabelRotation={0}
+              xAxisLabel=""
+              yAxisLabel=""
+              yAxisSuffix=""
             />
-            <SvgText
-              x={userPoint.x + 10}
-              y={userPoint.y - 10}
-              fill="blue"
-              fontSize="12"
-            >
-              {userPoint.value} {getUnit()}
-            </SvgText>
-          </Svg>
-        )}
+
+            {userPoint && (
+              <Svg style={[StyleSheet.absoluteFill, { width: chartWidth }]}>
+                <Circle
+                  cx={userPoint.x}
+                  cy={userPoint.y}
+                  r={5}
+                  fill="blue"
+                />
+                <SvgText
+                  x={userPoint.x + 10}
+                  y={userPoint.y - 10}
+                  fill="blue"
+                  fontSize="12"
+                >
+                  {userPoint.value} {getUnit()}
+                </SvgText>
+              </Svg>
+            )}
+          </View>
+        </ScrollView>
       </View>
 
       <View style={styles.legendContainer}>
@@ -385,13 +418,11 @@ const GrowthChart = ({ userDataPoint, gender = 'boys', activeChartType }: { user
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#ffffff',
-    padding: 0,
+    backgroundColor: "#ffffff",
     borderRadius: 16,
-    margin: 0,
   },
   title: {
-    fontSize: 18,
+    fontSize: 14,
     fontWeight: 'bold',
     textAlign: 'center',
   },
@@ -400,11 +431,19 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginBottom: 10,
   },
+  chartOuterContainer: {
+    height: 300,
+    marginHorizontal: 16,
+  },
+  scrollViewContent: {
+    alignItems: 'center',
+  },
   chartContainer: {
-    position: 'relative',
+    // Width will be set dynamically
   },
   chart: {
-    borderRadius: 16,
+    borderRadius: 10,
+    alignSelf: 'center',
   },
   legendContainer: {
     marginTop: 10,
@@ -416,7 +455,7 @@ const styles = StyleSheet.create({
     marginVertical: 3,
   },
   legendLine: {
-    width: 20,
+    width: 24,
     height: 1,
     marginRight: 8,
   },

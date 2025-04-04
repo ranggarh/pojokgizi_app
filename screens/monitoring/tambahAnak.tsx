@@ -28,7 +28,7 @@ const TambahAnak = () => {
                         <Text fontSize={"$md"} fontWeight={"$semibold"} marginBottom={"$2"} color="gray.600">
                             Nama Lengkap
                         </Text>
-                        <Input variant="underlined" padding={"$2"} width="100%" borderColor="#F98D3A">
+                        <Input variant="underlined" padding={"$2"} width="100%"  >
                             <InputField placeholder="Masukkan Nama Lengkap" onChangeText={text => setName(text)} />
                         </Input>
                     </Box>
@@ -58,7 +58,7 @@ const TambahAnak = () => {
                             <Text fontSize={"$md"} fontWeight={"$semibold"} marginBottom={"$2"} color="gray.600">
                                 Berat Badan Saat Lahir (kg)
                             </Text>
-                            <Input variant="underlined" borderColor="#F98D3A" padding={"$2"} width="100%" backgroundColor="gray.100">
+                            <Input variant="underlined"   padding={"$2"} width="100%" backgroundColor="gray.100">
                                 <InputField keyboardType="numeric" placeholder="Enter Text here" onChangeText={text => setWeight(parseFloat(text) || 0)} />
                             </Input>
                         </Box>
@@ -66,7 +66,7 @@ const TambahAnak = () => {
                             <Text fontSize={"$md"} fontWeight={"$semibold"} marginBottom={"$2"} color="gray.600">
                                 Tinggi Badan Saat Lahir (cm)
                             </Text>
-                            <Input variant="underlined" borderColor="#F98D3A" width="100%" padding={"$2"} backgroundColor="gray.100">
+                            <Input variant="underlined"   width="100%" padding={"$2"} backgroundColor="gray.100">
                                 <InputField keyboardType="numeric" placeholder="Enter Text here" onChangeText={text => setHeight(parseFloat(text) || 0)}
                                 />
                             </Input>
@@ -75,7 +75,7 @@ const TambahAnak = () => {
                             <Text fontSize={"$md"} fontWeight={"$semibold"} marginBottom={"$2"} color="gray.600">
                                 Lingkar Kepala Saat Lahir (cm)
                             </Text>
-                            <Input variant="underlined" borderColor="#F98D3A" width="100%" padding={"$2"} backgroundColor="gray.100">
+                            <Input variant="underlined"   width="100%" padding={"$2"} backgroundColor="gray.100">
                                 <InputField keyboardType="numeric" placeholder="Enter Text here" onChangeText={text => setHeight(parseFloat(text) || 0)}
                                 />
                             </Input>
@@ -107,7 +107,7 @@ const TambahAnak = () => {
                             Golongan Darah
                         </Text>
                         <Select selectedValue={(golDarah)} onValueChange={(value) => setGolDarah(value)}>
-                            <SelectTrigger borderColor="#F98D3A" variant="underlined" size="md">
+                            <SelectTrigger   variant="underlined" size="md">
                                 <SelectInput placeholder="Pilih Kondisi" mx="$3" />
                                 <SelectIcon>
                                     <Icon as={ChevronDownIcon} />
@@ -137,7 +137,7 @@ const TambahAnak = () => {
                 alignSelf="center"
                 width="100%"
                 position="absolute"
-                bottom={"-$11"}
+                bottom={0}
                 left={0}
                 right={0}
                 onPress={() => navigation.navigate('Hasil Monitoring')}

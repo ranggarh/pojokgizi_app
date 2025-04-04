@@ -151,7 +151,7 @@ const GiziAnakSekolah = () => {
     cekKategoriKritis();
   }, [ageInMonth, gender, kondisi])
 
-  const hitungBMRdanTEE = (kategori, weight, height) => {
+  const hitungBMRdanTEE = (kategori: string, weight: number, height: number): { BMR: number, TEE: number } => {
     let BMR = 0;
     let TEE = 0;
 
@@ -197,12 +197,12 @@ const GiziAnakSekolah = () => {
   };
 
   useEffect(() => {
-    const { BMR, TEE } = hitungBMRdanTEE(kategoriKritis, weight, height);
+    const { BMR, TEE } = hitungBMRdanTEE(kategoriKritis, parseFloat(weight), parseFloat(height));
     setBMR(BMR);
     setTEE(TEE);
   }, [kategoriKritis, weight, height]);
 
-  const hitungProtein = (metode, dataInput, weight, TEE) => {
+  const hitungProtein = (metode: string, dataInput: number, weight: number, TEE: number) => {
     console.log(`Metode: ${metode}, Input: ${dataInput}, Weight: ${weight}, TEE: ${TEE}`);
     let proteinGram = 0;
     let proteinKkal = 0;
@@ -223,12 +223,12 @@ const GiziAnakSekolah = () => {
   };
 
   useEffect(() => {
-    const { proteinGram, proteinKkal } = hitungProtein(metode, dataInput, weight, TEE);
+    const { proteinGram, proteinKkal } = hitungProtein(metode, dataInput, parseFloat(weight), TEE);
     setProteinGram(proteinGram);
     setProteinKkal(proteinKkal);
   }, [metode, dataInput, weight, TEE]);
 
-  const hitungLemak = (persenLemak, TEE) => {
+  const hitungLemak = (persenLemak: number, TEE: number) => {
     let lemakGram = 0;
     let lemakKkal = 0;
 
@@ -246,7 +246,7 @@ const GiziAnakSekolah = () => {
     setLemakKkal(lemakKkal);
   }, [persenLemak, TEE]);
 
-  const hitungKarbohidrat = (metodeKarbo, TEE, proteinKkal, lemakKkal, persenKarbo) => {
+  const hitungKarbohidrat = (metodeKarbo: string, TEE: number, proteinKkal: number, lemakKkal: number, persenKarbo: number) => {
     let karboKkal = 0;
     let karboGram = 0;
 
@@ -273,7 +273,7 @@ const GiziAnakSekolah = () => {
   return (
     <Box flex={1} justifyContent="space-between">
       <Box width="100%" h={120} bg={"#23b160"} flexDirection="row" justifyContent="space-between">
-        <Box width={"$35%"}>
+        <Box width="35%">
           <Image
             source={require("../../assets/math.png")}
             alt="Pantau Tumbuh Kembang Anak Secara Berkala"
@@ -282,7 +282,7 @@ const GiziAnakSekolah = () => {
             ml={"$2"}
           />
         </Box>
-        <Box width={"$65%"} mx={"$2"}>
+        <Box width="65%" mx={"$2"}>
           <Text fontSize={"$lg"} m={"$4"} fontWeight={"$bold"} color={"white"}>Kalkulator Status Gizi</Text>
           <Text fontSize={"$sm"} m={"$4"} mt={"-$2"} color={"white"}>Hitung Data Pengukuran Status Gizi Anda di sini Bersama PojokGizi Indonesia.</Text>
         </Box>
@@ -324,7 +324,7 @@ const GiziAnakSekolah = () => {
               <Text fontSize={"$md"} fontWeight={"$semibold"} marginBottom={"$2"} color="gray.600">
                 Nama Lengkap
               </Text>
-              <Input padding={"$2"} width="100%" backgroundColor="white" borderColor="#F98D3A">
+              <Input padding={"$2"} width="100%" backgroundColor="white"  >
                 <InputField placeholder="Masukkan Nama Lengkap" onChangeText={text => setName(text)} />
               </Input>
               {errors.name ? <Text color="red" fontSize="$sm">{errors.name}</Text> : null}
@@ -336,7 +336,7 @@ const GiziAnakSekolah = () => {
                   Tanggal Lahir
                 </Text>
                 <Pressable onPress={() => setShowPicker({ type: "birth", visible: true })}>
-                  <Input borderColor="#F98D3A" width="100%" backgroundColor="gray.100" isReadOnly>
+                  <Input   width="100%" backgroundColor="gray.100" isReadOnly>
                     <InputSlot pl="$3">
                       <Ionicons name="calendar-outline" size={20} color="gray.600" />
                     </InputSlot>
@@ -351,7 +351,7 @@ const GiziAnakSekolah = () => {
                   Tanggal Pengukuran
                 </Text>
                 <Pressable onPress={() => setShowPicker({ type: "measurement", visible: true })}>
-                  <Input borderColor="#F98D3A" width="100%" backgroundColor="gray.100" isReadOnly>
+                  <Input   width="100%" backgroundColor="gray.100" isReadOnly>
                     <InputSlot pl="$3">
                       <Ionicons name="calendar-outline" size={20} color="gray.600" />
                     </InputSlot>
@@ -365,7 +365,7 @@ const GiziAnakSekolah = () => {
               <Text fontSize={"$md"} fontWeight={"$semibold"} marginBottom={"$2"} color="gray.600">
                 Usia (Bulan)
               </Text>
-              <Input borderColor="#F98D3A" isDisabled={true} padding={"$2"} width="100%" backgroundColor="gray.100">
+              <Input   isDisabled={true} padding={"$2"} width="100%" backgroundColor="gray.100">
                 <Text>{age} ({ageInMonth} Bulan)</Text>
               </Input>
             </Box>
@@ -397,7 +397,7 @@ const GiziAnakSekolah = () => {
                 <Text fontSize={"$md"} fontWeight={"$semibold"} marginBottom={"$2"} color="gray.600">
                   Berat Badan (kg)
                 </Text>
-                <Input borderColor="#F98D3A" padding={"$2"} width="100%" backgroundColor="gray.100">
+                <Input   padding={"$2"} width="100%" backgroundColor="gray.100">
                   <InputField keyboardType="numeric" placeholder="Enter Text here" onChangeText={text => {
                     setWeight(text);
                   }} />
@@ -408,7 +408,7 @@ const GiziAnakSekolah = () => {
                 <Text fontSize={"$md"} fontWeight={"$semibold"} marginBottom={"$2"} color="gray.600">
                   Tinggi Badan (cm)
                 </Text>
-                <Input borderColor="#F98D3A" width="100%" padding={"$2"} backgroundColor="gray.100">
+                <Input   width="100%" padding={"$2"} backgroundColor="gray.100">
                   <InputField keyboardType="numeric" placeholder="Enter Text here" onChangeText={text => {
                     setHeight(text);
                   }} />
@@ -417,7 +417,7 @@ const GiziAnakSekolah = () => {
               </Box>
             </HStack>
 
-            <Box mb="$4" mb={"$20"}>
+            <Box mb={"$20"}>
               <Pressable onPress={() => setIsOpen(!isOpen)}>
                 <Box bg="#23b160" w="$full" h="$12" justifyContent="space-between" flexDirection="row" borderRadius={5} >
                   <Text color="white" fontWeight="$bold" my="$3" ml="$4">{isOpen ? "Kebutuhan Energi" : "Kebutuhan Energi"} (Opsional)</Text>
@@ -454,7 +454,7 @@ const GiziAnakSekolah = () => {
                     </Box>
                     {kategoriKritis && (
                       <Box>
-                        <Input borderColor="#F98D3A" isDisabled={true} padding="$2" width="100%" backgroundColor="gray.100">
+                        <Input   isDisabled={true} padding="$2" width="100%" backgroundColor="gray.100">
                           <Text fontSize="$md" fontWeight="$bold" color="red.600">
                             {kategoriKritis}
                           </Text>
@@ -464,7 +464,7 @@ const GiziAnakSekolah = () => {
                             <Text fontSize={"$md"} fontWeight={"$semibold"} marginBottom={"$2"} color="gray.600">
                               BMR
                             </Text>
-                            <Input borderColor="#F98D3A" isDisabled={true} padding={"$2"} width="100%" backgroundColor="gray.100">
+                            <Input   isDisabled={true} padding={"$2"} width="100%" backgroundColor="gray.100">
                               <Text fontSize="$md" fontWeight="$bold" color="red.600">
                                 {BMR}
                               </Text>
@@ -474,7 +474,7 @@ const GiziAnakSekolah = () => {
                             <Text fontSize={"$md"} fontWeight={"$semibold"} marginBottom={"$2"} color="gray.600">
                               TEE
                             </Text>
-                            <Input borderColor="#F98D3A" isDisabled={true} width="100%" padding={"$2"} backgroundColor="gray.100">
+                            <Input   isDisabled={true} width="100%" padding={"$2"} backgroundColor="gray.100">
                               <Text fontSize="$md" fontWeight="$bold" color="red.600">
                                 {TEE}
                               </Text>
@@ -517,7 +517,7 @@ const GiziAnakSekolah = () => {
                           {metode === "gram protein" ? "Gram Protein" : "Persentase Protein"}
                         </Text>
                         <Box flexDirection="row">
-                          <Input borderColor="#F98D3A" padding="$2" width="85%" backgroundColor="gray.100">
+                          <Input   padding="$2" width="85%" backgroundColor="gray.100">
                             <InputField
                               keyboardType="numeric"
                               placeholder="Enter Text here"
@@ -534,7 +534,7 @@ const GiziAnakSekolah = () => {
                             <Text fontSize={"$md"} fontWeight={"$semibold"} marginBottom={"$2"} color="gray.600">
                               Protein (g)
                             </Text>
-                            <Input borderColor="#F98D3A" isDisabled={true} padding={"$2"} width="100%" backgroundColor="gray.100">
+                            <Input   isDisabled={true} padding={"$2"} width="100%" backgroundColor="gray.100">
                               <Text fontSize="$md" fontWeight="$bold" color="red.600">
                                 {proteinGram}
                               </Text>
@@ -544,7 +544,7 @@ const GiziAnakSekolah = () => {
                             <Text fontSize={"$md"} fontWeight={"$semibold"} marginBottom={"$2"} color="gray.600">
                               Protein (kkal)
                             </Text>
-                            <Input borderColor="#F98D3A" isDisabled={true} width="100%" padding={"$2"} backgroundColor="gray.100">
+                            <Input   isDisabled={true} width="100%" padding={"$2"} backgroundColor="gray.100">
                               <Text fontSize="$md" fontWeight="$bold" color="red.600">
                                 {proteinKkal}
                               </Text>
@@ -566,7 +566,7 @@ const GiziAnakSekolah = () => {
                           Persentase Lemak
                         </Text>
                         <Box flexDirection="row">
-                          <Input borderColor="#F98D3A" padding="$2" width="85%" backgroundColor="gray.100">
+                          <Input   padding="$2" width="85%" backgroundColor="gray.100">
                             <InputField
                               keyboardType="numeric"
                               placeholder="Enter Text here"
@@ -583,7 +583,7 @@ const GiziAnakSekolah = () => {
                             <Text fontSize={"$md"} fontWeight={"$semibold"} marginBottom={"$2"} color="gray.600">
                               lemak (g)
                             </Text>
-                            <Input borderColor="#F98D3A" isDisabled={true} padding={"$2"} width="100%" backgroundColor="gray.100">
+                            <Input   isDisabled={true} padding={"$2"} width="100%" backgroundColor="gray.100">
                               <Text fontSize="$md" fontWeight="$bold" color="red.600">
                                 {lemakGram}
                               </Text>
@@ -593,7 +593,7 @@ const GiziAnakSekolah = () => {
                             <Text fontSize={"$md"} fontWeight={"$semibold"} marginBottom={"$2"} color="gray.600">
                               Lemak (kkal)
                             </Text>
-                            <Input borderColor="#F98D3A" isDisabled={true} width="100%" padding={"$2"} backgroundColor="gray.100">
+                            <Input   isDisabled={true} width="100%" padding={"$2"} backgroundColor="gray.100">
                               <Text fontSize="$md" fontWeight="$bold" color="red.600">
                                 {lemakKkal}
                               </Text>
@@ -636,7 +636,7 @@ const GiziAnakSekolah = () => {
                           {metodeKarbo === "sisa" ? "Sisa dari Kebutuhan Lemak dan Protein" : "Persentase TEE"}
                         </Text>
                         {metodeKarbo === "persentase" && (
-                          <Input borderColor="#F98D3A" padding="$2" width="100%" backgroundColor="gray.100">
+                          <Input   padding="$2" width="100%" backgroundColor="gray.100">
                             <InputField
                               keyboardType="numeric"
                               placeholder="Enter Percentage here"
@@ -652,7 +652,7 @@ const GiziAnakSekolah = () => {
                             <Text fontSize={"$md"} fontWeight={"$semibold"} marginBottom={"$2"} color="gray.600">
                               Karbohidrat (g)
                             </Text>
-                            <Input borderColor="#F98D3A" isDisabled={true} padding={"$2"} width="100%" backgroundColor="gray.100">
+                            <Input   isDisabled={true} padding={"$2"} width="100%" backgroundColor="gray.100">
                               <Text fontSize="$md" fontWeight="$bold" color="red.600">
                                 {karboGram}
                               </Text>
@@ -662,7 +662,7 @@ const GiziAnakSekolah = () => {
                             <Text fontSize={"$md"} fontWeight={"$semibold"} marginBottom={"$2"} color="gray.600">
                               Karbohidrat (kkal)
                             </Text>
-                            <Input borderColor="#F98D3A" isDisabled={true} width="100%" padding={"$2"} backgroundColor="gray.100">
+                            <Input   isDisabled={true} width="100%" padding={"$2"} backgroundColor="gray.100">
                               <Text fontSize="$md" fontWeight="$bold" color="red.600">
                                 {karboKkal}
                               </Text>

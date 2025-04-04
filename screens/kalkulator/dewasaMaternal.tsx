@@ -398,7 +398,7 @@ const DewasaMaternal = () => {
                         <Text fontSize={"$md"} fontWeight={"$semibold"} marginBottom={"$2"} color="gray.600">
                         Nama Lengkap
                         </Text>
-                        <Input padding={"$2"} width="100%" backgroundColor="white" borderColor="#F98D3A">
+                        <Input padding={"$2"} width="100%" backgroundColor="white"  >
                         <InputField placeholder="Masukkan Nama Lengkap" onChangeText={text => setName(text)} />
                         </Input>
                         {errors.name ? <Text color="red" fontSize="$sm">{errors.name}</Text> : null}
@@ -410,7 +410,7 @@ const DewasaMaternal = () => {
                             Tanggal Lahir
                         </Text>
                         <Pressable onPress={() => setShowPicker({ type: "birth", visible: true })}>
-                            <Input borderColor="#F98D3A" width="100%" backgroundColor="gray.100" isReadOnly>
+                            <Input   width="100%" backgroundColor="gray.100" isReadOnly>
                             <InputSlot pl="$3">
                                 <Ionicons name="calendar-outline" size={20} color="gray.600" />
                             </InputSlot>
@@ -425,7 +425,7 @@ const DewasaMaternal = () => {
                             Tanggal Pengukuran
                         </Text>
                         <Pressable onPress={() => setShowPicker({ type: "measurement", visible: true })}>
-                            <Input borderColor="#F98D3A" width="100%" backgroundColor="gray.100" isReadOnly>
+                            <Input   width="100%" backgroundColor="gray.100" isReadOnly>
                             <InputSlot pl="$3">
                                 <Ionicons name="calendar-outline" size={20} color="gray.600" />
                             </InputSlot>
@@ -439,7 +439,7 @@ const DewasaMaternal = () => {
                         <Text fontSize={"$md"} fontWeight={"$semibold"} marginBottom={"$2"} color="gray.600">
                         Usia (Tahun)
                         </Text>
-                        <Input borderColor="#F98D3A" isDisabled={true} padding={"$2"} width="100%" backgroundColor="gray.100">
+                        <Input   isDisabled={true} padding={"$2"} width="100%" backgroundColor="gray.100">
                         <Text>{age} Tahun</Text>
                         </Input>
                     </Box>
@@ -475,7 +475,7 @@ const DewasaMaternal = () => {
                           title="Add Employee" 
                           message="The employee ID field should have a unique value. You will be able to create a user permission for the newly added employee." 
                         /> */}
-                        <Input borderColor="#F98D3A" padding={"$2"} width="100%" backgroundColor="gray.100">
+                        <Input   padding={"$2"} width="100%" backgroundColor="gray.100">
                             <InputField keyboardType="numeric" placeholder="Enter Text here" onChangeText={text => {
                             setWeight(parseFloat(text) || 0);
                             }} />
@@ -486,7 +486,7 @@ const DewasaMaternal = () => {
                         <Text fontSize={"$md"} fontWeight={"$semibold"} marginBottom={"$2"} color="gray.600">
                             Tinggi Badan (cm)
                         </Text>
-                        <Input borderColor="#F98D3A" width="100%" padding={"$2"} backgroundColor="gray.100">
+                        <Input   width="100%" padding={"$2"} backgroundColor="gray.100">
                             <InputField keyboardType="numeric" placeholder="Enter Text here" onChangeText={text => {
                             setHeight(parseFloat(text) || 0);
                             }} />
@@ -501,7 +501,7 @@ const DewasaMaternal = () => {
                         <Text fontSize={"$md"} fontWeight={"$semibold"} marginBottom={"$2"} color="gray.600">
                             LiLA (cm)
                         </Text>
-                        <Input borderColor="#F98D3A" padding={"$2"} width="100%" backgroundColor="gray.100">
+                        <Input   padding={"$2"} width="100%" backgroundColor="gray.100">
                             <InputField keyboardType="numeric" placeholder="Enter Text here" onChangeText={text => {
                             setLila(parseFloat(text) || 0);
                             }} />
@@ -512,7 +512,7 @@ const DewasaMaternal = () => {
                         <Text fontSize={"$md"} fontWeight={"$semibold"} marginBottom={"$2"} color="gray.600">
                             T. Lutut (cm)
                         </Text>
-                        <Input borderColor="#F98D3A" padding={"$2"} width="100%" backgroundColor="gray.100">
+                        <Input   padding={"$2"} width="100%" backgroundColor="gray.100">
                             <InputField keyboardType="numeric" placeholder="Enter Text here" onChangeText={text => {
                             setTinggiLutut(parseFloat(text) || 0);
                             }} />
@@ -523,7 +523,7 @@ const DewasaMaternal = () => {
                         <Text fontSize={"$md"} fontWeight={"$semibold"} marginBottom={"$2"} color="gray.600">
                             P.Ulna (cm)
                         </Text>
-                        <Input borderColor="#F98D3A" padding={"$2"} width="100%" backgroundColor="gray.100">
+                        <Input   padding={"$2"} width="100%" backgroundColor="gray.100">
                             <InputField keyboardType="numeric" placeholder="Enter Text here" onChangeText={text => {
                             setPanjangUlna(parseFloat(text) || 0);
                             }} />
@@ -539,7 +539,7 @@ const DewasaMaternal = () => {
                         Oederma
                         </Text>                
                         <Select>
-                          <SelectTrigger borderColor="#F98D3A" variant="underlined" size="md" >
+                          <SelectTrigger   variant="underlined" size="md" >
                             <SelectInput placeholder="Pilih Gejala Oederma" mx="$3"/>
                             <SelectIcon mr="$3" >
                               <Icon as={ChevronDownIcon} />
@@ -571,7 +571,7 @@ const DewasaMaternal = () => {
                         Asites
                         </Text>                
                         <Select>
-                          <SelectTrigger borderColor="#F98D3A" variant="underlined" size="md" >
+                          <SelectTrigger   variant="underlined" size="md" >
                             <SelectInput placeholder="Pilih Gejala Asites" mx="$3"/>
                             <SelectIcon mr="$3">
                               <Icon as={ChevronDownIcon} />
@@ -602,7 +602,7 @@ const DewasaMaternal = () => {
                         <Text fontSize={"$md"} fontWeight={"$semibold"} marginBottom={"$2"} color="gray.600">
                             Faktor Aktivitas
                         </Text>
-                        <Input borderColor="#F98D3A" padding={"$2"} width="100%" backgroundColor="gray.100">
+                        <Input   padding={"$2"} width="100%" backgroundColor="gray.100">
                             <InputField keyboardType="numeric" placeholder="Enter Text here" onChangeText={text => {
                             setFaktorAktivitas(parseFloat(text) || 0);
                             }} />
@@ -613,7 +613,7 @@ const DewasaMaternal = () => {
                         <Text fontSize={"$md"} fontWeight={"$semibold"} marginBottom={"$2"} color="gray.600">
                             Faktor Stress
                         </Text>
-                        <Input borderColor="#F98D3A" width="100%" padding={"$2"} backgroundColor="gray.100">
+                        <Input   width="100%" padding={"$2"} backgroundColor="gray.100">
                             <InputField keyboardType="numeric" placeholder="Enter Text here" onChangeText={text => {
                             setFaktorStress(parseFloat(text) || 0);
                             }} />
@@ -626,7 +626,7 @@ const DewasaMaternal = () => {
                           Oedema
                         </Text>
                         <Select selectedValue={String(oedema)} onValueChange={(value) => setOedema(value)}>
-                          <SelectTrigger borderColor="#F98D3A" variant="underlined" size="md">
+                          <SelectTrigger   variant="underlined" size="md">
                             <SelectInput placeholder="Pilih Kondisi" mx="$3" />
                             <SelectIcon>
                               <Icon as={ChevronDownIcon} />
@@ -651,7 +651,7 @@ const DewasaMaternal = () => {
                           Asites
                         </Text>
                         <Select selectedValue={asites} onValueChange={(value) => setAsites(value)}>
-                          <SelectTrigger borderColor="#F98D3A" variant="underlined" size="md">
+                          <SelectTrigger   variant="underlined" size="md">
                             <SelectInput placeholder="Pilih Kondisi" mx="$3" />
                             <SelectIcon >
                               <Icon as={ChevronDownIcon} />
@@ -678,7 +678,7 @@ const DewasaMaternal = () => {
                         <Input
                           variant="outline"
                           borderRadius={0}
-                          borderColor="#F98D3A"
+                           
                           isDisabled
                         >
                           <InputField textAlign="center" value={bbKoreksi !== null ? bbKoreksi.toFixed(2) : "-"} />
@@ -691,7 +691,7 @@ const DewasaMaternal = () => {
                         <Input
                           variant="outline"
                           borderRadius={0}
-                          borderColor="#F98D3A"
+                           
                           isDisabled
                         >
                           <InputField textAlign="center" value={bbi !== null ? bbi.toFixed(2) : "-"} />
@@ -704,7 +704,7 @@ const DewasaMaternal = () => {
                         <Input
                           variant="outline"
                           borderRadius={0}
-                          borderColor="#F98D3A"
+                           
                           isDisabled
                         >
                           <InputField textAlign="center" value={bbAdj} />
@@ -717,7 +717,7 @@ const DewasaMaternal = () => {
                           Ibu Hamil/Menyusui
                         </Text>
                         <Select mr="$3" selectedValue={String(ketHamil)} onValueChange={(value) => setKetHamil(value)}>
-                          <SelectTrigger borderColor="#F98D3A" variant="underlined" size="md">
+                          <SelectTrigger   variant="underlined" size="md">
                             <SelectInput placeholder="Pilih Kondisi" mx="$3" />
                             <SelectIcon >
                               <Icon as={ChevronDownIcon} />
@@ -745,25 +745,25 @@ const DewasaMaternal = () => {
                       <HStack mt={"$4"} space="md" width="100%" gap={3} alignItems="center">
                         <Box flex={1} alignItems="center">
                           <Text fontSize="$sm" color="gray.500">+E</Text>
-                          <Input variant="outline" borderRadius={0} borderColor="#F98D3A">
+                          <Input variant="outline" borderRadius={0}  >
                             <InputField fontSize="$xs" textAlign="center" placeholder="-" value={nutrisiKehamilan[ketHamil].E.toString()|| "-"}/>
                           </Input>
                         </Box>
                         <Box flex={1} alignItems="center">
                           <Text fontSize="$sm" color="gray.500">+P</Text>
-                          <Input variant="outline" borderRadius={0} borderColor="#F98D3A">
+                          <Input variant="outline" borderRadius={0}  >
                             <InputField fontSize="$xs" textAlign="center" placeholder="-" value={nutrisiKehamilan[ketHamil].P.toString()|| "-"} />
                           </Input>
                         </Box>
                         <Box flex={1} alignItems="center">
                           <Text fontSize="$sm" color="gray.500">+L</Text>
-                          <Input variant="outline" borderRadius={0} borderColor="#F98D3A">
+                          <Input variant="outline" borderRadius={0}  >
                             <InputField fontSize="$xs" textAlign="center" placeholder="-" value={nutrisiKehamilan[ketHamil].L.toString()|| "-"}/>
                           </Input>
                         </Box>
                         <Box flex={1} alignItems="center">
                           <Text fontSize="$sm" color="gray.500">+KH</Text>
-                          <Input variant="outline" borderRadius={0} borderColor="#F98D3A">
+                          <Input variant="outline" borderRadius={0}  >
                             <InputField fontSize="$xs" textAlign="center" placeholder="-" value={nutrisiKehamilan[ketHamil].KH.toString()|| "-"}/>
                           </Input>
                         </Box>
@@ -780,7 +780,7 @@ const DewasaMaternal = () => {
                           </Text>
                         </Box>
                         <Box marginBottom={4} my={"$3"} flex={1}>
-                          <Input variant="outline" isDisabled={true} borderColor="#F98D3A" width="100%" padding={"$2"} backgroundColor="gray.100">
+                          <Input variant="outline" isDisabled={true}   width="100%" padding={"$2"} backgroundColor="gray.100">
                             <InputField placeholder="Status KEK" value={statusKEK}/>
                           </Input>
                         </Box>
@@ -799,7 +799,7 @@ const DewasaMaternal = () => {
                             setSelectedBB(value);
                           }}
                         >
-                          <SelectTrigger borderColor="#F98D3A" variant="underlined" size="md">
+                          <SelectTrigger   variant="underlined" size="md">
                             <SelectInput placeholder="Pilih BB" mx="$3" isDisabled={selectedBB === '0'} />
                             <SelectIcon>
                               <Icon as={ChevronDownIcon} />
@@ -821,7 +821,7 @@ const DewasaMaternal = () => {
                         <Text fontSize={"$md"} fontWeight={"$semibold"} marginBottom={"$2"} color="gray.600">
                           Nilai BB Aktual
                         </Text>
-                        <Input variant="outline" isDisabled={true} borderColor="#F98D3A" width="100%" padding={"$2"} backgroundColor="gray.100">
+                        <Input variant="outline" isDisabled={true}   width="100%" padding={"$2"} backgroundColor="gray.100">
                             <InputField value={
                               selectedBB === "0" ? weight : 
                               selectedBB === "1" ? bbi.toFixed(2) : 
@@ -873,7 +873,7 @@ const DewasaMaternal = () => {
                                     <Text fontSize={"$md"} fontWeight={"$semibold"} marginBottom={"$2"} color="gray.600">
                                         BMR
                                     </Text>
-                                    <Input borderColor="#F98D3A" isDisabled={true} padding={"$2"} width="100%" backgroundColor="gray.100">
+                                    <Input   isDisabled={true} padding={"$2"} width="100%" backgroundColor="gray.100">
                                     <Text fontSize="$md" fontWeight="$bold" color="red.600">
                                         {BMR.toFixed(2)}
                                     </Text>
@@ -883,7 +883,7 @@ const DewasaMaternal = () => {
                                     <Text fontSize={"$md"} fontWeight={"$semibold"} marginBottom={"$2"} color="gray.600">
                                         TEE
                                     </Text>
-                                    <Input borderColor="#F98D3A" isDisabled={true} width="100%" padding={"$2"} backgroundColor="gray.100">
+                                    <Input   isDisabled={true} width="100%" padding={"$2"} backgroundColor="gray.100">
                                     <Text fontSize="$md" fontWeight="$bold" color="red.600">
                                         {TEE.toFixed(2)}
                                     </Text>
@@ -926,7 +926,7 @@ const DewasaMaternal = () => {
                                     {metode === "gram protein" ? "Gram Protein" : "Persentase Protein"}
                                 </Text>
                                 <Box flexDirection="row">
-                                    <Input borderColor="#F98D3A" padding="$2" width="85%" backgroundColor="gray.100">
+                                    <Input   padding="$2" width="85%" backgroundColor="gray.100">
                                     <InputField
                                         keyboardType="numeric"
                                         placeholder="Enter Text here"
@@ -943,7 +943,7 @@ const DewasaMaternal = () => {
                                     <Text fontSize={"$md"} fontWeight={"$semibold"} marginBottom={"$2"} color="gray.600">
                                         Protein (g)
                                     </Text>
-                                    <Input borderColor="#F98D3A" isDisabled={true} padding={"$2"} width="100%" backgroundColor="gray.100">
+                                    <Input   isDisabled={true} padding={"$2"} width="100%" backgroundColor="gray.100">
                                         <Text fontSize="$md" fontWeight="$bold" color="red.600">
                                         {proteinGram.toFixed(2)}
                                         </Text>
@@ -953,7 +953,7 @@ const DewasaMaternal = () => {
                                     <Text fontSize={"$md"} fontWeight={"$semibold"} marginBottom={"$2"} color="gray.600">
                                         Protein (kkal)
                                     </Text>
-                                    <Input borderColor="#F98D3A" isDisabled={true} width="100%" padding={"$2"} backgroundColor="gray.100">
+                                    <Input   isDisabled={true} width="100%" padding={"$2"} backgroundColor="gray.100">
                                         <Text fontSize="$md" fontWeight="$bold" color="red.600">
                                         {proteinKkal.toFixed(2)}
                                         </Text>
@@ -975,7 +975,7 @@ const DewasaMaternal = () => {
                                     Persentase Lemak
                                 </Text>
                                 <Box flexDirection="row">
-                                    <Input borderColor="#F98D3A" padding="$2" width="85%" backgroundColor="gray.100">
+                                    <Input   padding="$2" width="85%" backgroundColor="gray.100">
                                     <InputField
                                         keyboardType="numeric"
                                         placeholder="Enter Text here"
@@ -992,7 +992,7 @@ const DewasaMaternal = () => {
                                     <Text fontSize={"$md"} fontWeight={"$semibold"} marginBottom={"$2"} color="gray.600">
                                         lemak (g)
                                     </Text>
-                                    <Input borderColor="#F98D3A" isDisabled={true} padding={"$2"} width="100%" backgroundColor="gray.100">
+                                    <Input   isDisabled={true} padding={"$2"} width="100%" backgroundColor="gray.100">
                                         <Text fontSize="$md" fontWeight="$bold" color="red.600">
                                         {lemakGram.toFixed(2)}
                                         </Text>
@@ -1002,7 +1002,7 @@ const DewasaMaternal = () => {
                                     <Text fontSize={"$md"} fontWeight={"$semibold"} marginBottom={"$2"} color="gray.600">
                                         Lemak (kkal)
                                     </Text>
-                                    <Input borderColor="#F98D3A" isDisabled={true} width="100%" padding={"$2"} backgroundColor="gray.100">
+                                    <Input   isDisabled={true} width="100%" padding={"$2"} backgroundColor="gray.100">
                                         <Text fontSize="$md" fontWeight="$bold" color="red.600">
                                         {lemakKkal.toFixed(2)}
                                         </Text>
@@ -1044,7 +1044,7 @@ const DewasaMaternal = () => {
                                     {metodeKarbo === "sisa" ? "Sisa dari Kebutuhan Lemak dan Protein" : "Persentase TEE"}
                                 </Text>
                                 {metodeKarbo === "persentase" && (
-                                    <Input borderColor="#F98D3A" padding="$2" width="100%" backgroundColor="gray.100">
+                                    <Input   padding="$2" width="100%" backgroundColor="gray.100">
                                     <InputField
                                         keyboardType="numeric"
                                         placeholder="Enter Percentage here"
@@ -1060,7 +1060,7 @@ const DewasaMaternal = () => {
                                     <Text fontSize={"$md"} fontWeight={"$semibold"} marginBottom={"$2"} color="gray.600">
                                         Karbohidrat (g)
                                     </Text>
-                                    <Input borderColor="#F98D3A" isDisabled={true} padding={"$2"} width="100%" backgroundColor="gray.100">
+                                    <Input   isDisabled={true} padding={"$2"} width="100%" backgroundColor="gray.100">
                                         <Text fontSize="$md" fontWeight="$bold" color="red.600">
                                         {karboGram.toFixed(2)}
                                         </Text>
@@ -1070,7 +1070,7 @@ const DewasaMaternal = () => {
                                     <Text fontSize={"$md"} fontWeight={"$semibold"} marginBottom={"$2"} color="gray.600">
                                         Karbohidrat (kkal)
                                     </Text>
-                                    <Input borderColor="#F98D3A" isDisabled={true} width="100%" padding={"$2"} backgroundColor="gray.100">
+                                    <Input   isDisabled={true} width="100%" padding={"$2"} backgroundColor="gray.100">
                                         <Text fontSize="$md" fontWeight="$bold" color="red.600">
                                         {karboKkal.toFixed(2)}
                                         </Text>
