@@ -1,135 +1,139 @@
-import React, { useState, useRef } from "react";
-import { ScrollView, TouchableOpacity, TextInput, View, Animated, Dimensions } from "react-native";
+import React, { useState, useRef, useEffect } from "react";
+import { ScrollView, TouchableOpacity, TextInput, View, Animated, Dimensions, FlatList } from "react-native";
 import { Box, Text, VStack, HStack, Input, InputField } from "@gluestack-ui/themed";
+import { getMenuMakanan, MenuMakanan } from "../../utils/actions/menuMakananAct"; // Pastikan path ini benar
+
+interface TotalNutrition {
+    calories: number;
+    protein: number;
+    fat: number;
+    carbs: number;
+    serat: number;
+    natrium: number;
+    kalsium: number;
+    fosfor: number;
+    seng: number;
+    tembaga: number;
+    retinol: number;
+    riboflavin: number;
+    niasin: number;
+    thiamin: number;
+    vitaminC: number; // Menggunakan vitaminC untuk konsistensi
+    abu: number;
+    air: number;
+    besi: number;
+    bkar: number;
+}
 
 const KomposisiMakanan = () => {
-    // Dummy data for food items
-    const foodItems = [
-        {
-            id: 1,
-            title: "Bubur Ikan Teri",
-            category: "B",
-            calories: 120,
-            protein: 8.5,
-            fat: 3.2,
-            carbs: 15.0,
-            description: "Bubur dengan tambahan ikan teri yang kaya protein dan kalsium, cocok untuk sarapan."
-        },
-        {
-            id: 2,
-            title: "Bubur Udang",
-            category: "B",
-            calories: 150,
-            protein: 10.2,
-            fat: 4.5,
-            carbs: 16.8,
-            description: "Bubur dengan udang segar yang kaya omega-3 dan protein hewani berkualitas tinggi."
-        },
-        {
-            id: 3,
-            title: "Bubur Ayam dan Telur",
-            category: "B",
-            calories: 200,
-            protein: 12.5,
-            fat: 7.8,
-            carbs: 19.3,
-            description: "Kombinasi bubur dengan ayam cincang dan telur, kaya protein dan nutrisi esensial."
-        },
-        {
-            id: 4,
-            title: "Bubur Ayam dan Tahu",
-            category: "B",
-            calories: 180,
-            protein: 11.5,
-            fat: 5.2,
-            carbs: 22.6,
-            description: "Bubur dengan potongan ayam dan tahu, seimbang protein hewani dan nabati."
-        },
-        {
-            id: 5,
-            title: "Bubur Ayam Kacang Merah",
-            category: "B",
-            calories: 220,
-            protein: 13.5,
-            fat: 6.3,
-            carbs: 25.8,
-            description: "Bubur ayam dengan tambahan kacang merah yang kaya serat dan protein nabati."
-        },
-    ];
-
     const [searchQuery, setSearchQuery] = useState("");
-    const [selectedFoods, setSelectedFoods] = useState([]);
-    const [filteredItems, setFilteredItems] = useState(foodItems);
+    const [selectedFoods, setSelectedFoods] = useState<MenuMakanan[]>([]);
+    const [filteredItems, setFilteredItems] = useState<MenuMakanan[]>([]);
     const [name, setName] = useState("");
     const [expandedNutrition, setExpandedNutrition] = useState(false);
     const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
     const { width: screenWidth, height: screenHeight } = Dimensions.get("window");
-    const drawerWidth = screenWidth * 0.85; // Sedikit lebih kecil untuk memastikan tidak full screen
-    // PENTING: Gunakan transformX untuk animasi yang kompatibel dengan useNativeDriver
+    const drawerWidth = screenWidth * 0.85;
     const translateX = useRef(new Animated.Value(drawerWidth)).current;
+
+    useEffect(() => {
+        const unsubscribe = getMenuMakanan((data: MenuMakanan[]) => {
+            // console.log("Data yang diterima:", data); // Tambahkan log ini
+            setFilteredItems(data);
+        });
+
+        return () => unsubscribe();
+    }, []);
 
     const openDrawer = () => {
         setIsDrawerOpen(true);
-        // Animasi drawer dari kanan ke kiri
         Animated.timing(translateX, {
             toValue: 0,
-            duration: 600, // Durasi yang lebih lama untuk open drawer
-            useNativeDriver: true, // Menggunakan false agar animasi berfungsi untuk posisi dan ukuran
+            duration: 600,
+            useNativeDriver: true,
         }).start();
     };
 
     const closeDrawer = () => {
-        // Animasi drawer dari kiri ke kanan (keluar dari layar)
         Animated.timing(translateX, {
             toValue: drawerWidth,
-            duration: 300, // Durasi lebih cepat untuk close drawer
-            useNativeDriver: true, // Menggunakan false agar konsisten dengan openDrawer
+            duration: 300,
+            useNativeDriver: true,
         }).start(() => {
             setIsDrawerOpen(false);
         });
     };
 
-    // Handle search
     const handleSearch = (text) => {
         setSearchQuery(text);
         if (text) {
-            const filtered = foodItems.filter(
-                item => item.title.toLowerCase().includes(text.toLowerCase())
+            const filtered = filteredItems.filter(
+                item => item.nama.toLowerCase().includes(text.toLowerCase())
             );
             setFilteredItems(filtered);
         } else {
-            setFilteredItems(foodItems);
+            // Jika tidak ada query pencarian, reset ke data awal
+            getMenuMakanan((data: MenuMakanan[]) => {
+                setFilteredItems(data);
+            });
         }
     };
 
-    // Handle item selection - add to selected foods
     const handleSelectFood = (food) => {
-        // Check if food is already selected to avoid duplicates
         if (!selectedFoods.some(item => item.id === food.id)) {
             setSelectedFoods([...selectedFoods, food]);
         }
     };
 
-    // Handle item removal
     const handleRemoveFood = (foodId) => {
         setSelectedFoods(selectedFoods.filter(food => food.id !== foodId));
     };
 
-    // Calculate total nutritional values
-    const calculateTotalNutrition = () => {
+    const calculateTotalNutrition = (): TotalNutrition => {
         return selectedFoods.reduce((totals, food) => {
             return {
-                calories: totals.calories + food.calories,
-                protein: totals.protein + food.protein,
-                fat: totals.fat + food.fat,
-                carbs: totals.carbs + food.carbs
+                calories: totals.calories + parseFloat(food.energi),
+                protein: totals.protein + parseFloat(food.protein),
+                fat: totals.fat + parseFloat(food.lemak),
+                carbs: totals.carbs + parseFloat(food.kh),
+                serat: totals.serat + parseFloat(food.serat),
+                natrium: totals.natrium + parseFloat(food.natrium),
+                kalsium: totals.kalsium + parseFloat(food.kalsium),
+                fosfor: totals.fosfor + parseFloat(food.fosfor),
+                seng: totals.seng + parseFloat(food.seng),
+                tembaga: totals.tembaga + parseFloat(food.tembaga),
+                retinol: totals.retinol + parseFloat(food.retinol),
+                riboflavin: totals.riboflavin + parseFloat(food.riboflavin),
+                niasin: totals.niasin + parseFloat(food.niasin),
+                thiamin: totals.thiamin + parseFloat(food.thiamin),
+                vitaminC: totals.vitaminC + parseFloat(food.vit_c),
+                abu: totals.abu + parseFloat(food.abu),
+                air: totals.air + parseFloat(food.air),
+                besi: totals.besi + parseFloat(food.besi),
+                bkar: totals.bkar + parseFloat(food.bkar),
+
             };
         }, {
             calories: 0,
-            protein: 0, 
-            fat: 0, 
-            carbs: 0
+            protein: 0,
+            fat: 0,
+            carbs: 0,
+            serat: 0,
+            natrium: 0,
+            kalsium: 0,
+            fosfor: 0,
+            seng: 0,
+            tembaga: 0,
+            retinol: 0,
+            riboflavin: 0,
+            niasin: 0,
+            thiamin: 0,
+            vit_c: 0,
+            abu: 0,
+            air: 0,
+            besi: 0,
+            bkar: 0,
         });
     };
 
@@ -154,7 +158,6 @@ const KomposisiMakanan = () => {
                                     padding="$2"
                                     width="85%"
                                     backgroundColor="white"
-                                    // borderColor="#F98D3A"
                                 >
                                     <InputField
                                         placeholder="Saya Mau Makan Nasi Goreng Spesial"
@@ -217,7 +220,6 @@ const KomposisiMakanan = () => {
                                     <Text fontFamily="inter-bold" color="white" fontSize="$sm" mr="$2">
                                         Detail Komposisi Gizi
                                     </Text>
-                                    {/* {expandedNutrition ? <ChevronUp size={20} /> : <ChevronDown size={20} />} */}
                                 </HStack>
                             </TouchableOpacity>
 
@@ -227,19 +229,25 @@ const KomposisiMakanan = () => {
                                     {/* Minerals section example */}
                                     <Box mb="$3">
                                         <Text fontFamily="inter-bold" fontSize="$md" mb="$2">
-                                            Mineral
+                                            Makronutrien
                                         </Text>
                                         <VStack space="sm">
                                             <HStack justifyContent="space-between">
-                                                <Text fontSize="$sm">Kalsium</Text>
+                                                <Text fontSize="$sm">Protein</Text>
                                                 <Text fontFamily="inter-bold" fontSize="$sm">
-                                                    120 mg
+                                                    {totalNutrition.protein.toFixed(1)} g
                                                 </Text>
                                             </HStack>
                                             <HStack justifyContent="space-between">
-                                                <Text fontSize="$sm">Fosfor</Text>
+                                                <Text fontSize="$sm">Lemak</Text>
                                                 <Text fontFamily="inter-bold" fontSize="$sm">
-                                                    85 mg
+                                                    {totalNutrition.fat.toFixed(1)} g
+                                                </Text>
+                                            </HStack>
+                                            <HStack justifyContent="space-between">
+                                                <Text fontSize="$sm">Serat</Text>
+                                                <Text fontFamily="inter-bold" fontSize="$sm">
+                                                    {(totalNutrition.serat || 0).toFixed(1)} g
                                                 </Text>
                                             </HStack>
                                         </VStack>
@@ -252,15 +260,106 @@ const KomposisiMakanan = () => {
                                         </Text>
                                         <VStack space="sm">
                                             <HStack justifyContent="space-between">
-                                                <Text fontSize="$sm">Vitamin A</Text>
+                                                <Text fontSize="$sm">Retinol</Text>
                                                 <Text fontFamily="inter-bold" fontSize="$sm">
-                                                    60 mcg
+                                                    {(totalNutrition.retinol || 0).toFixed(1)} mcg
+                                                </Text>
+                                            </HStack>
+                                            <HStack justifyContent="space-between">
+                                                <Text fontSize="$sm">Riboflavin</Text>
+                                                <Text fontFamily="inter-bold" fontSize="$sm">
+                                                    {(totalNutrition.riboflavin || 0).toFixed(1)} mcg
+                                                </Text>
+                                            </HStack>
+                                            <HStack justifyContent="space-between">
+                                                <Text fontSize="$sm">Niasin</Text>
+                                                <Text fontFamily="inter-bold" fontSize="$sm">
+                                                    {(totalNutrition.niasin || 0).toFixed(1)} mcg
+                                                </Text>
+                                            </HStack>
+                                            <HStack justifyContent="space-between">
+                                                <Text fontSize="$sm">Thiamin</Text>
+                                                <Text fontFamily="inter-bold" fontSize="$sm">
+                                                    {(totalNutrition.thiamin || 0).toFixed(1)} mcg
                                                 </Text>
                                             </HStack>
                                             <HStack justifyContent="space-between">
                                                 <Text fontSize="$sm">Vitamin C</Text>
                                                 <Text fontFamily="inter-bold" fontSize="$sm">
-                                                    2.5 mg
+                                                    {(totalNutrition.vit_c || 0).toFixed(1)} mcg
+                                                </Text>
+                                            </HStack>
+
+                                        </VStack>
+
+                                    </Box>
+                                    {/* Vitamins section example */}
+                                    <Box mt="$3">
+                                        <Text fontFamily="inter-bold" fontSize="$md" mb="$2">
+                                            Mineral
+                                        </Text>
+                                        <VStack space="sm">
+                                            <HStack justifyContent="space-between">
+                                                <Text fontSize="$sm">Natrium</Text>
+                                                <Text fontFamily="inter-bold" fontSize="$sm">
+                                                    {(totalNutrition.natrium || 0).toFixed(1)} mcg
+                                                </Text>
+                                            </HStack>
+                                            <HStack justifyContent="space-between">
+                                                <Text fontSize="$sm">Kalsium</Text>
+                                                <Text fontFamily="inter-bold" fontSize="$sm">
+                                                    {(totalNutrition.kalsium || 0).toFixed(1)} mcg
+                                                </Text>
+                                            </HStack>
+                                            <HStack justifyContent="space-between">
+                                                <Text fontSize="$sm">Fosfor</Text>
+                                                <Text fontFamily="inter-bold" fontSize="$sm">
+                                                    {(totalNutrition.fosfor || 0).toFixed(1)} mcg
+                                                </Text>
+                                            </HStack>
+                                            <HStack justifyContent="space-between">
+                                                <Text fontSize="$sm">Seng</Text>
+                                                <Text fontFamily="inter-bold" fontSize="$sm">
+                                                    {(totalNutrition.seng || 0).toFixed(1)} mcg
+                                                </Text>
+                                            </HStack>
+                                            <HStack justifyContent="space-between">
+                                                <Text fontSize="$sm">Tembaga</Text>
+                                                <Text fontFamily="inter-bold" fontSize="$sm">
+                                                    {(totalNutrition.tembaga || 0).toFixed(1)} mcg
+                                                </Text>
+                                            </HStack>
+
+                                        </VStack>
+
+                                    </Box>
+                                    <Box mt="$3">
+                                        <Text fontFamily="inter-bold" fontSize="$md" mb="$2">
+                                            Lainnya
+                                        </Text>
+                                        <VStack space="sm">
+                                            <HStack justifyContent="space-between">
+                                                <Text fontSize="$sm">Abu</Text>
+                                                <Text fontFamily="inter-bold" fontSize="$sm">
+                                                    {(totalNutrition.abu || 0).toFixed(1)} mcg
+                                                </Text>
+                                            </HStack>
+                                            <HStack justifyContent="space-between">
+                                                <Text fontSize="$sm">Air</Text>
+                                                <Text fontFamily="inter-bold" fontSize="$sm">
+                                                    {(totalNutrition.air || 0).toFixed(1)} mcg
+                                                </Text>
+                                            </HStack>
+                                            <HStack justifyContent="space-between">
+                                                <Text fontSize="$sm">Besi</Text>
+                                                <Text fontFamily="inter-bold" fontSize="$sm">
+                                                    {(totalNutrition.besi || 0).toFixed(1)} mcg
+                                                </Text>
+                                            </HStack>
+                                            <HStack justifyContent="space-between">
+                                                <Text fontSize="$sm">Bkar</Text>
+                                                <Text fontFamily="inter-bold" fontSize="$sm">
+                                                    {(totalNutrition.bkar || 0).toFixed(1)} mcg
                                                 </Text>
                                             </HStack>
                                         </VStack>
@@ -286,11 +385,11 @@ const KomposisiMakanan = () => {
                                             <Box key={food.id} bg="white" p="$2" borderRadius={5} mb="$2">
                                                 <HStack justifyContent="space-between" alignItems="center" mx="$4" my="$2">
                                                     <Text fontFamily="inter-bold" fontSize="$sm">
-                                                        {food.title}
+                                                        {food.nama}
                                                     </Text>
                                                     <HStack alignItems="center">
                                                         <Text fontFamily="inter-bold" fontSize="$sm" mr="$4">
-                                                            {food.calories} Kalori
+                                                            {food.energi} Kalori
                                                         </Text>
                                                         <TouchableOpacity onPress={() => handleRemoveFood(food.id)}>
                                                             <Text fontSize="$lg" color="red">✕</Text>
@@ -313,7 +412,7 @@ const KomposisiMakanan = () => {
                 </Box>
             </ScrollView>
 
-            {/* Custom Drawer - Diperbaiki dengan Animasi yang Konsisten */}
+            {/* Custom Drawer */}
             {isDrawerOpen && (
                 <Animated.View
                     style={{
@@ -332,7 +431,7 @@ const KomposisiMakanan = () => {
                         shadowOpacity: 0.2,
                         shadowRadius: 5,
                         elevation: 5,
-                        zIndex: 999, // Memastikan drawer di atas elemen lain
+                        zIndex: 999,
                     }}
                 >
                     <View style={{ paddingTop: 20, flex: 1 }}>
@@ -348,20 +447,20 @@ const KomposisiMakanan = () => {
                         </TouchableOpacity>
 
                         {/* Search Bar */}
-                        <Box 
-                            mx="$4" 
-                            borderRadius={5} 
-                            p="$2" 
-                            bg="#e6f7ef" 
+                        <Box
+                            mx="$4"
+                            borderRadius={5}
+                            p="$2"
+                            bg="#e6f7ef"
                             marginTop={5}
                             alignItems="center"
                         >
-                            <HStack 
-                                space="md" 
-                                alignItems="center" 
-                                bg="white" 
-                                borderRadius={8} 
-                                p="$2" 
+                            <HStack
+                                space="md"
+                                alignItems="center"
+                                bg="white"
+                                borderRadius={8}
+                                p="$2"
                                 width="90%"
                             >
                                 <Text fontSize="$md" color="#888">🔍</Text>
@@ -379,41 +478,36 @@ const KomposisiMakanan = () => {
                             <Text fontFamily="inter-bold" fontSize="$lg" mb="$2">
                                 Pilih Makanan
                             </Text>
-                            <ScrollView 
-                                nestedScrollEnabled={true} 
-                                style={{ flex: 1 }}
-                                contentContainerStyle={{ paddingBottom: 20 }}
-                            >
-                                <VStack space="sm">
-                                    {filteredItems.map((item) => (
-                                        <TouchableOpacity
-                                            key={item.id}
-                                            onPress={() => {
-                                                handleSelectFood(item);
-                                                
-                                            }}
+                            <FlatList
+                                data={filteredItems}
+                                renderItem={({ item }) => (
+                                    <TouchableOpacity
+                                        onPress={() => handleSelectFood(item)}
+                                    >
+                                        <Box
+                                            p="$3"
+                                            borderRadius={8}
+                                            borderBottomWidth={1}
+                                            borderBottomColor="#eee"
+                                            mb="$2"
+                                            bg={
+                                                selectedFoods.some((food) => food.id === item.id)
+                                                    ? "#e6f7ef"
+                                                    : "white"
+                                            }
                                         >
-                                            <Box
-                                                p="$3"
-                                                borderRadius={8}
-                                                borderBottomWidth={1}
-                                                borderBottomColor="#eee"
-                                                mb="$2"
-                                                bg={
-                                                    selectedFoods.some((food) => food.id === item.id)
-                                                        ? "#e6f7ef"
-                                                        : "white"
-                                                }
-                                            >
-                                                <Text fontSize="$md">{item.title}</Text>
-                                                <Text fontSize="$xs" color="gray.500" mt="$1">
-                                                    {item.calories} Kalori • {item.protein}g Protein
-                                                </Text>
-                                            </Box>
-                                        </TouchableOpacity>
-                                    ))}
-                                </VStack>
-                            </ScrollView>
+                                            <Text fontSize="$md">{item.nama}</Text>
+                                            <Text fontSize="$xs" color="gray.500" mt="$1">
+                                                {item.energi} Kalori • {item.protein}g Protein
+                                            </Text>
+                                        </Box>
+                                    </TouchableOpacity>
+                                )}
+                                keyExtractor={(item) => item.id}
+                                initialNumToRender={10} // Jumlah item yang dirender pada awal
+                                maxToRenderPerBatch={10} // Jumlah item yang dirender dalam setiap batch
+                                windowSize={5} // Jumlah item yang disimpan dalam memori
+                            />
                         </Box>
                     </View>
                 </Animated.View>
